@@ -1,7 +1,0 @@
-{
-    "style": "oral-history-blue.css",
-    "types": {
-        "RepositoryCollection": {"template": "test_data/oral-history/templates/oral-history-collection-template.html"}
-    },
-    "root": {"template": "test_data/oral-history/templates/oral-history-root-template.html"}
-}

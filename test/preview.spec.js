@@ -424,6 +424,57 @@ describe("preview.js", function () {
       );
     });
 
+    it("should build subject filters from about values using subject names", async function () {
+      const crate = new ROCrate({ array: true, link: true });
+
+      crate.root.name = "Subject filter test";
+      crate.addEntity({
+        "@id": "dataset-1",
+        "@type": "Dataset",
+        name: "Dataset One",
+        about: { "@id": "#subject-1" },
+      });
+      crate.addEntity({
+        "@id": "dataset-2",
+        "@type": "Dataset",
+        name: "Dataset Two",
+        about: { "@id": "#subject-2" },
+      });
+      crate.addEntity({
+        "@id": "#subject-1",
+        "@type": "DefinedTerm",
+        name: "Garden histories",
+      });
+      crate.addEntity({
+        "@id": "#subject-2",
+        "@type": "DefinedTerm",
+        name: "School life",
+      });
+
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        tabular: {
+          searchEnabled: true,
+        },
+      };
+
+      const result = await roCrateToJSON(crate, config, []);
+      const subjectFilter = result.tabular.filters.find((filter) => filter.key === "about");
+
+      assert.ok(subjectFilter, "Subject filter should be generated for about values");
+      assert.equal(subjectFilter.items[0].label, "all", "Subject filter should include an all chip");
+
+      const subjectLabels = subjectFilter.items.slice(1).map((item) => item.label);
+      assert.ok(subjectLabels.includes("Garden histories"), "Subject labels should use target names");
+      assert.ok(subjectLabels.includes("School life"), "Subject labels should use target names");
+    });
+
     it("should normalise bare property terms to URIs so layout propertyGroups can match them", async function () {
       const crateData = JSON.parse(
         fs.readFileSync("test_data/sample/crate/ro-crate-metadata.json", "utf8")

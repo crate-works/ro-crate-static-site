@@ -116,6 +116,21 @@
           return;
         }
 
+        var activeTabularWrap = activeTableWrap.closest(".tabular-wrap") || activeTableWrap.parentElement;
+        var activeFilterChips = Array.from((activeTabularWrap || document).querySelectorAll(".tabular-filter-chip.is-active"));
+        var activeFilters = activeFilterChips.reduce(function (acc, chip) {
+          var filterKey = chip.dataset.filterKey || "";
+          var filterValue = (chip.dataset.filterValue || "").toLowerCase();
+          if (!filterKey || !filterValue) {
+            return acc;
+          }
+          if (!acc[filterKey]) {
+            acc[filterKey] = [];
+          }
+          acc[filterKey].push(filterValue);
+          return acc;
+        }, {});
+
         activeTableBody.querySelectorAll("tr").forEach(function (row) {
           clearSearchHighlights(row);
 
@@ -127,8 +142,15 @@
             var cellText = row.dataset["col" + idx] || "";
             return cellText.indexOf(q) > -1;
           });
+          var matchesFilters = Object.keys(activeFilters).every(function (key) {
+            var datasetKey = getTabularFilterDatasetKey(key);
+            var rowValues = (row.dataset[datasetKey] || "").toLowerCase();
+            return activeFilters[key].some(function (value) {
+              return rowValues.indexOf("|" + value + "|") > -1;
+            });
+          });
 
-          row.style.display = matchesGlobal && matchesColumns ? "" : "none";
+          row.style.display = matchesGlobal && matchesColumns && matchesFilters ? "" : "none";
 
           if (row.style.display !== "none") {
             if (globalTerm) {
@@ -149,6 +171,35 @@
         updateTabularCount();
       }
 
+      function getTabularFilterDatasetKey(key) {
+        if (!key) {
+          return "";
+        }
+        return "filter" + key.charAt(0).toUpperCase() + key.slice(1);
+      }
+
+      function resetTabularFilters() {
+        document.querySelectorAll(".tabular-filter-chip").forEach(function (chip) {
+          var isDefault = (chip.dataset.filterValue || "") === "";
+          chip.classList.toggle("is-active", isDefault);
+          chip.setAttribute("aria-pressed", isDefault ? "true" : "false");
+        });
+      }
+
+      function selectTabularFilterChip(filterKey, filterValue) {
+        if (!filterKey) {
+          return;
+        }
+
+        var normalizedValue = (filterValue || "").toLowerCase();
+        document.querySelectorAll('.tabular-filter-chip[data-filter-key="' + filterKey + '"]').forEach(function (chip) {
+          var chipValue = (chip.dataset.filterValue || "").toLowerCase();
+          var isActive = normalizedValue ? chipValue === normalizedValue : chipValue === "";
+          chip.classList.toggle("is-active", isActive);
+          chip.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+      }
+
       function updateTabularCount() {
         var count = document.getElementById("tabularCount");
         if (!count) {
@@ -162,7 +213,7 @@
         var visible = rows.filter(function (row) {
           return row.style.display !== "none";
         }).length;
-        count.textContent = visible + " / " + rows.length;
+        count.textContent = "Results: " + visible + " / " + rows.length;
       }
 
       function filterTableCell(input) {
@@ -240,6 +291,7 @@
 
         var select = document.getElementById("tabularTypeSelect");
         var searchInput = document.getElementById("tabularSearchInput");
+        var title = document.querySelector(".table-view-title");
 
         // Handle type switching (show/hide pre-rendered tables)
         if (select) {
@@ -253,11 +305,22 @@
             if (selectedTable) {
               selectedTable.classList.add("tabular-table-active");
             }
+            // Update the title with the selected type
+            var selectedOption = select.options[select.selectedIndex];
+
+            if (title && selectedOption) {
+              var label = selectedOption.text.replace(/\s*\(\d+\)/, "");
+
+              var activeTable = document.querySelector(".tabular-table-active tbody");
+              var count = activeTable ? activeTable.querySelectorAll("tr").length : 0;
+
+              title.textContent = label + " View";
+            }
             // Clear search when switching types
             if (searchInput) {
               searchInput.value = "";
             }
-            updateTabularCount();
+            resetTabularFilters();
           });
           // Show the initial selected type
           var initialTable = document.querySelector(".tabular-table-wrap[data-type='" + select.value + "']");
@@ -284,6 +347,23 @@
           input.addEventListener("input", applyTabularFilters);
         });
 
+        document.querySelectorAll(".tabular-filter-chip").forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var filterKey = this.dataset.filterKey || "";
+            var filterValue = this.dataset.filterValue || "";
+
+            if (!filterValue || this.classList.contains("is-active")) {
+              resetTabularFilters();
+            } else {
+              selectTabularFilterChip(filterKey, filterValue);
+            }
+
+            applyTabularFilters();
+          });
+        });
+
+        resetTabularFilters();
+
         // Close summary overlay when clicking outside the panel, matching close-button behavior.
         document.querySelectorAll(".entity").forEach(function (overlay) {
           overlay.addEventListener("click", function (event) {
@@ -298,10 +378,38 @@
           });
         });
       });
+
+      // Handle footer modal functionality
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("footerModal");
+        const modalBody = document.getElementById("footerModalBody");
+        const closeButton = document.getElementById("footerModalClose");
+
+        document.querySelectorAll(".footer-modal-link").forEach(link => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            modalBody.textContent = this.dataset.modalText;
+            modal.hidden = false;
+          });
+        });
+
+        closeButton.addEventListener("click", () => {
+          modal.hidden = true;
+        });
+
+        modal.addEventListener("click", e => {
+          if (e.target === modal) {
+            modal.hidden = true;
+          }
+        });
+      });
     </script>
   </head>
 
   <body>
+    <main>
+    <!-- Renders an info link for a given URL if info links are enabled in the configuration -->
     {%- macro infoLink(url) %}
       {%- set showInfoLinks = config.settings.showInfoLinks if config and config.settings and config.settings.showInfoLinks is not none else true %}
       {%- if url and showInfoLinks %}
@@ -319,11 +427,13 @@
       {%- endif %}
     {%- endmacro %}
 
+    <!-- Renders the display label for a property -->
     {%- macro diplayLabel(propData) %}
       {{ propData.label | replace(r/.*:/, "") }}
       {{ infoLink(propData.url) }}
     {%- endmacro %}
 
+    <!-- Renders a property for display -->
     {%- macro displayProp(prop, propData) %}
       <div class="property-row">
         {%- if propData.fwd.length > 0 %}
@@ -398,6 +508,7 @@
       </div>
     {%- endmacro %}
 
+    <!-- Renders the type navigation dropdown -->
     {%- macro typeNav() %}
       <select onchange="location.href=this.value">
         <option value="disabled selected">Select a type</option>
@@ -409,37 +520,59 @@
       </select>
     {%- endmacro %}
 
+    <!-- Renders the navigation for the crate, either as a dropdown or a single label if only one type is present -->
     {%- macro crateNav() %}
-      <div class="nav">
-        <p>Browse by type:</p>
-        {%- if data.tabular and data.tabular.enabled %}
-          {%- set navItems = data.tabular.navItems if data.tabular.navItems else [] %}
-          {%- if navItems.length == 1 %}
-            <p>{{ navItems[0].label }}</p>
-          {%- else %}
-          <select id="tabularTypeSelect">
-            {%- for navItem in navItems %}
-              <option value="{{ navItem.type }}" {{ "selected" if data.tabular.mainNavType == navItem.type else "" }}>{{ navItem.label }}</option>
-            {%- endfor %}
-          </select>
+      {%- if data.tabular and data.tabular.enabled %}
+        {%- set navItems = data.tabular.navItems if data.tabular.navItems else [] %}
+
+        <div class="tabular-table-header">
+          <span class="table-view-title">
+            {%- if navItems.length == 1 %}
+              {{ navItems[0].shortLabel }} View
+            {%- else %}
+              {%- for navItem in navItems %}
+                {%- if data.tabular.mainNavType == navItem.type %}
+                  {{ navItem.shortLabel }} View
+                {%- endif %}
+              {%- endfor %}
+            {%- endif %}
+          </span>
+
+          {%- if navItems.length > 1 %}
+            <div class="table-view-controls">
+              <label for="tabularTypeSelect">Change</label>
+
+              <select id="tabularTypeSelect">
+                {%- for navItem in navItems %}
+                <option value="{{ navItem.type }}" {{ "selected" if data.tabular.mainNavType==navItem.type else "" }}>
+                  {{ navItem.shortLabel }} ({{ navItem.count }})
+                </option>
+                {%- endfor %}
+              </select>
+            </div>
           {%- endif %}
+        </div>
+
         {%- elif data.tabular and data.tabular.navOnly %}
-          <select id="tabularTypeSelect">
-            {%- for type in data.tabular.navTypes %}
-              <option value="{{ type }}" {{ "selected" if data.tabular.mainNavType == type else "" }}>{{ type }}</option>
-            {%- endfor %}
-          </select>
+
+          <div class="table-view-controls">
+            <label for="tabularTypeSelect">Change</label>
+
+            <select id="tabularTypeSelect">
+              {%- for type in data.tabular.navTypes %}
+                <option value="{{ type }}"
+                  {{ "selected" if data.tabular.mainNavType == type else "" }}>
+                  {{ type }}
+                </option>
+              {%- endfor %}
+            </select>
+          </div>
         {%- else %}
           {{ typeNav() }}
         {%- endif %}
-        <!--
-{%- if data.types["Dataset"] and data.types["Dataset"].length > 2 %}
-          <a href="#types_Dataset">Datasets in this crate</a>
-        {%- endif %}
-    -->
-      </div>
-    {%- endmacro %}
+{%- endmacro %}
 
+    <!-- Renders a table cell based on its type and content -->
     {%- macro renderTableCell(cell, isNameColumn, row) %}
       {%- if cell is string and cell %}
         {{ cell }}
@@ -520,58 +653,95 @@
         {%- endif %}
       {%- endif %}
     {%- endmacro %}
-
+    
+    <!-- Renders the tabular summary section with search and filtering capabilities -->
     {%- macro tabularSummary() %}
-      {%- if data.tabular and data.tabular.enabled %}
-        <div class="tabular-wrap">
-          {%- if data.tabular.searchEnabled %}
-            <div class="tabular-controls">
-              <label for="tabularSearchInput">Find</label>
-              <input id="tabularSearchInput" type="text" />
-              <span class="tabular-count" id="tabularCount"></span>
-            </div>
-          {%- endif %}
-
-          {%- for typeName, typeData in data.tabular.types %}
-            {%- set nameUri = "http://schema.org/name" %}
-            <div class="tabular-table-wrap" data-type="{{ typeName }}">
-              <table class="tabular-table">
-                <thead>
-                  <tr>
-                    {%- for col in typeData.columns %}
-                      <th>{{ col.label or col.uri }}</th>
-                    {%- endfor %}
-                  </tr>
-                  {%- if data.tabular.columnSearchEnabled %}
-                    <tr>
-                      {%- for col in typeData.columns %}
-                        <th>
-                          <input type="text" class="tabular-col-search" placeholder="Find..." />
-                        </th>
-                      {%- endfor %}
-                    </tr>
-                  {%- endif %}
-                </thead>
-                <tbody>
-                  {%- for row in typeData.rows %}
-                    <tr data-full-text="{{ (row.displayName | default(row.id, true)) | lower }} {{ row.cellSearchTexts | join(" ") | lower }}"
-                        {%- for i in range(row.cellSearchTexts|length) %}
-                          data-col{{ i }}="{{ row.cellSearchTexts[i] | default("", true) | lower }}"
-                        {%- endfor %}>
-                      {%- for cell in row.cells %}
-                        <td>
-                          {{- renderTableCell(cell, typeData.columns[loop.index0].uri == nameUri, row) -}}
-                        </td>
-                      {%- endfor %}
-                    </tr>
-                  {%- endfor %}
-                </tbody>
-              </table>
-            </div>
-          {%- endfor %}
-        </div>
+    {%- if data.tabular and data.tabular.enabled %}
+    <div class="tabular-wrap">
+    
+      {# Search bar first #}
+      {%- if data.tabular.searchEnabled %}
+      <div class="tabular-controls">
+        <input id="tabularSearchInput" type="text" placeholder="Find..." />
+        <span class="tabular-count" id="tabularCount"></span>
+      </div>
       {%- endif %}
+    
+      {# Filters second #}
+      {%- if data.tabular.filters and data.tabular.filters.length %}
+      <div class="tabular-filters">
+        {%- for filterGroup in data.tabular.filters %}
+        <div class="tabular-filter-group" data-filter-key="{{ filterGroup.key }}">
+          <span class="tabular-filter-label">{{ filterGroup.label }}</span>
+          <div class="tabular-filter-chips">
+            {%- for item in filterGroup.items %}
+            <button
+              type="button"
+              class="tabular-filter-chip{{ ' is-active' if item.active else '' }}"
+              data-filter-key="{{ filterGroup.key }}"
+              data-filter-value="{{ item.value }}"
+              aria-pressed="{{ 'true' if item.active else 'false' }}"
+            >
+              {{ item.label }}
+            </button>
+            {%- endfor %}
+          </div>
+        </div>
+        {%- endfor %}
+      </div>
+      {%- endif %}
+    
+      {# View selector third #}
+      {{ crateNav() }}
+    
+      {# Table last #}
+      {%- for typeName, typeData in data.tabular.types %}
+      {%- set nameUri = "http://schema.org/name" %}
+      <div class="tabular-table-wrap" data-type="{{ typeName }}">
+        <table class="tabular-table">
+          <thead>
+            <tr>
+              {%- for col in typeData.columns %}
+              <th>{{ col.label or col.uri }}</th>
+              {%- endfor %}
+            </tr>
+    
+            {%- if data.tabular.columnSearchEnabled %}
+            <tr>
+              {%- for col in typeData.columns %}
+              <th>
+                <input type="text" class="tabular-col-search" placeholder="Find..." />
+              </th>
+              {%- endfor %}
+            </tr>
+            {%- endif %}
+          </thead>
+    
+          <tbody>
+            {%- for row in typeData.rows %}
+            <tr
+              data-full-text="{{ (row.displayName | default(row.id, true)) | lower }} {{ row.cellSearchTexts | join(' ') | lower }}"
+              data-filter-about="{{ row.filterTexts.about if row.filterTexts and row.filterTexts.about else '||' }}"
+              {%- for i in range(row.cellSearchTexts|length) %} data-col{{ i
+              }}="{{ row.cellSearchTexts[i] | default('', true) | lower }}" {%- endfor %}>
+    
+              {%- for cell in row.cells %}
+              <td>
+                {{- renderTableCell(cell, typeData.columns[loop.index0].uri == nameUri, row) -}}
+              </td>
+              {%- endfor %}
+            </tr>
+            {%- endfor %}
+          </tbody>
+    
+        </table>
+      </div>
+      {%- endfor %}
+    
+    </div>
+    {%- endif %}
     {%- endmacro %}
+
     <!--
     {%- macro schemaElements() %}
       {%- if data.types["DefinedTerm"] or data.types["rdf:Property"] or  data.types["rdfs:Class"] %}
@@ -593,6 +763,7 @@
     {%- endmacro %}
     -->
 
+    <!-- Renders the root navigation link -->
     {%- macro root() %}
     <!--
       <div class="home-link">
@@ -636,14 +807,10 @@
         {%- if class == "entity" %}<div class="entity-panel">{%- endif %}
         <div class="entity-header-row">
           {%- if class == "entity" %}
-            <a
-              href="#{{ effectiveCloseTargetId | urlencode }}"
-              class="entity-close"
-              aria-label="Close summary"
-              title="Close"
-            >
-              ×
-            </a>
+          <a href="#{{ effectiveCloseTargetId | urlencode }}" class="entity-close" aria-label="Close summary" title="Close">
+            <span class="entity-close-text">Close</span>
+            <span class="entity-close-icon">&times;</span>
+          </a>
           {%- endif %}
           <div class="entity-header-top">
             <div class="entity-header-home">
@@ -671,7 +838,7 @@
             {%- if rootDescription %}
               <p class="root-description">  {{ rootDescription | nl2br | safe }}</p>
             {%- endif %}
-            <p class="root-more-link"><a href="#root_entity_overlay">More about this data</a></p>
+            <p class="root-more-link"><a href="#root_entity_overlay">More about this collection</a></p>
           {%- endif %}
           {%- if not (item == data.ids[data.entryPoint]) %}
             <h2 class="id">{{ item.id }}</h2>
@@ -682,7 +849,6 @@
 
         {%- if item == data.ids[data.entryPoint] and class == "root" %}
           <section class="browse">
-            {{ crateNav() }}
             {%- if data.tabular and data.tabular.enabled %}
               {{ tabularSummary() }}
             {%- elif data.tabular and data.tabular.navOnly %}
@@ -826,5 +992,41 @@
         {{ display(entity, "entity") }}
       {%- endif %}
     {%- endfor %}
+    </main>
+    
+    <div id="footerModal" class="modal" hidden>
+      <div class="modal-content">
+        <button id="footerModalClose" type="button">&times;</button>
+        <div id="footerModalBody"></div>
+      </div>
+    </div>
+    
+    {%- if config.footer %}
+    <footer class="site-footer">
+      <div class="footer-left">
+        {{ config.footer.text }}
+      </div>
+    
+      <div class="footer-right">
+        {%- if config.footer.links %}
+        <ul class="footer-links">
+          {% for link in config.footer.links %}
+          <li>
+            {% if link.modalText %}
+            <a href="#" class="footer-modal-link" data-modal-text="{{ link.modalText }}">
+              {{ link.label }}
+            </a>
+            {% else %}
+            <a href="{{ link.url }}" {% if link.external %}target="_blank" rel="noopener" {% endif %}>
+              {{ link.label }}
+            </a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {%- endif %}
+      </div>
+    </footer>
+    {%- endif %}
   </body>
 </html>
