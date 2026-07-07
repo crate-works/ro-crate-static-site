@@ -692,12 +692,12 @@
               {%- if item.content %}
                 {{ item.content | renderMarkdown | safe }}
               {%- else %}
-                <p>Markdown content not available. <a href="{{ item.id | urlencode }}">View file</a></p>
+                <p>Markdown content not available. <a href="{{ item.id }}">View file</a></p>
               {%- endif %}
             {% elif pdfRegex.test(item.id) %}
               <!--          <iframe   src="{{ item.id }}" type="application/pdf" width="100%" height="600px" loading="lazy" />-->
             {%- endif %}
-            <a href="{{ item.id | urlencode }}">Open file location</a>
+            <a href="{{ item.id }}">Open file location</a>
           </div>
         {%- endif %}
 

@@ -769,7 +769,7 @@ t_38 += runtime.suppressValue(env.getFilter("safe").call(context, env.getFilter(
 }
 else {
 t_38 += "\n                <p>Markdown content not available. <a href=\"";
-t_38 += runtime.suppressValue(env.getFilter("urlencode").call(context, runtime.memberLookup((l_item),"id")), env.opts.autoescape);
+t_38 += runtime.suppressValue(runtime.memberLookup((l_item),"id"), env.opts.autoescape);
 t_38 += "\">View file</a></p>";
 ;
 }
@@ -794,7 +794,7 @@ t_38 += "\" type=\"application/pdf\" width=\"100%\" height=\"600px\" loading=\"l
 ;
 }
 t_38 += "\n            <a href=\"";
-t_38 += runtime.suppressValue(env.getFilter("urlencode").call(context, runtime.memberLookup((l_item),"id")), env.opts.autoescape);
+t_38 += runtime.suppressValue(runtime.memberLookup((l_item),"id"), env.opts.autoescape);
 t_38 += "\">Open file location</a>\n          </div>";
 ;
 }
