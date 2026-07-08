@@ -116,8 +116,7 @@
           return;
         }
 
-        var activeTabularWrap = activeTableWrap.closest(".tabular-wrap") || activeTableWrap.parentElement;
-        var activeFilterChips = Array.from((activeTabularWrap || document).querySelectorAll(".tabular-filter-chip.is-active"));
+        var activeFilterChips = Array.from(activeTableWrap.querySelectorAll(".tabular-filter-chip.is-active"));
         var activeFilters = activeFilterChips.reduce(function (acc, chip) {
           var filterKey = chip.dataset.filterKey || "";
           var filterValue = (chip.dataset.filterValue || "").toLowerCase();
@@ -452,7 +451,7 @@
               {%- for val in propData.fwd %}
                 <div>
                   {%- if val is string %}
-                    {{ val | urlize | nl2br  | safe }}
+                    {{ val | urlize | replace(r/,(\s+)/, ",&nbsp;") | nl2br | safe }}
                   {%- elif val["url"] %}
                     <a href="{{ val["url"] }}"> {{ val["url"] }}</a>
                   {%- else %}
@@ -463,7 +462,7 @@
                         </a>
                       </span>
                     {%- elif val.value is string %}
-                      {{ val.value | urlize | nl2br  | safe }}
+                      {{ val.value | urlize | replace(r/,(\s+)/, ",&nbsp;") | nl2br | safe }}
                     {%- elif val.value %}
                       {{ val.value }}
                     {%- else %}
@@ -608,19 +607,20 @@
           </div>
         </div>
       {%- elif cell is iterable and cell is not string and cell is not mapping %}
-        {# Array of 2 values - inline #}
+        {# Array of 2 values - stacked lines #}
         {%- for item in cell %}
-          {%- if not loop.first %}, {% endif %}
-          {%- if item.target_id and item.text %}
-            {%- set buttonClass = "button-left" if item.isReverse else "button-right" %}
-            <span{%- if not data.hasLayout %} class="{{ buttonClass }}"{% endif %}>
-              <a href="#{{ item.target_id | urlencode }}">
-                {{ item.text }}
-              </a>
-            </span>
-          {%- elif item.text %}
-            {{ item.text }}
-          {%- endif %}
+          <div class="table-cell-inline-item">
+            {%- if item.target_id and item.text %}
+              {%- set buttonClass = "button-left" if item.isReverse else "button-right" %}
+              <span{%- if not data.hasLayout %} class="{{ buttonClass }}"{% endif %}>
+                <a href="#{{ item.target_id | urlencode }}">
+                  {{ item.text }}
+                </a>
+              </span>
+            {%- elif item.text %}
+              {{ item.text }}
+            {%- endif %}
+          </div>
         {%- endfor %}
       {%- elif cell is mapping and cell.target_id and cell.text %}
         {%- set buttonClass = "button-left" if cell.isReverse else "button-right" %}
@@ -667,30 +667,6 @@
       </div>
       {%- endif %}
     
-      {# Filters second #}
-      {%- if data.tabular.filters and data.tabular.filters.length %}
-      <div class="tabular-filters">
-        {%- for filterGroup in data.tabular.filters %}
-        <div class="tabular-filter-group" data-filter-key="{{ filterGroup.key }}">
-          <span class="tabular-filter-label">{{ filterGroup.label }}</span>
-          <div class="tabular-filter-chips">
-            {%- for item in filterGroup.items %}
-            <button
-              type="button"
-              class="tabular-filter-chip{{ ' is-active' if item.active else '' }}"
-              data-filter-key="{{ filterGroup.key }}"
-              data-filter-value="{{ item.value }}"
-              aria-pressed="{{ 'true' if item.active else 'false' }}"
-            >
-              {{ item.label }}
-            </button>
-            {%- endfor %}
-          </div>
-        </div>
-        {%- endfor %}
-      </div>
-      {%- endif %}
-    
       {# View selector third #}
       {{ crateNav() }}
     
@@ -698,6 +674,28 @@
       {%- for typeName, typeData in data.tabular.types %}
       {%- set nameUri = "http://schema.org/name" %}
       <div class="tabular-table-wrap" data-type="{{ typeName }}">
+        {%- if typeData.filters and typeData.filters.length %}
+        <div class="tabular-filters">
+          {%- for filterGroup in typeData.filters %}
+          <div class="tabular-filter-group" data-filter-key="{{ filterGroup.key }}">
+            <span class="tabular-filter-label">{{ filterGroup.label }}</span>
+            <div class="tabular-filter-chips">
+              {%- for item in filterGroup.items %}
+              <button
+                type="button"
+                class="tabular-filter-chip{{ ' is-active' if item.active else '' }}"
+                data-filter-key="{{ filterGroup.key }}"
+                data-filter-value="{{ item.value }}"
+                aria-pressed="{{ 'true' if item.active else 'false' }}"
+              >
+                {{ item.label }}
+              </button>
+              {%- endfor %}
+            </div>
+          </div>
+          {%- endfor %}
+        </div>
+        {%- endif %}
         <table class="tabular-table">
           <thead>
             <tr>
@@ -721,7 +719,9 @@
             {%- for row in typeData.rows %}
             <tr
               data-full-text="{{ (row.displayName | default(row.id, true)) | lower }} {{ row.cellSearchTexts | join(' ') | lower }}"
-              data-filter-about="{{ row.filterTexts.about if row.filterTexts and row.filterTexts.about else '||' }}"
+              {%- if row.filterTexts %}
+              {%- for filterGroup in typeData.filters %} data-filter-{{ filterGroup.key }}="{{ row.filterTexts[filterGroup.key] if row.filterTexts[filterGroup.key] else '||' }}"{%- endfor %}
+              {%- endif %}
               {%- for i in range(row.cellSearchTexts|length) %} data-col{{ i
               }}="{{ row.cellSearchTexts[i] | default('', true) | lower }}" {%- endfor %}>
     

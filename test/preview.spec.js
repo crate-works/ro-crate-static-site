@@ -424,21 +424,23 @@ describe("preview.js", function () {
       );
     });
 
-    it("should build subject filters from about values using subject names", async function () {
+    it("should build configured facets per navigation table using facet labels and fallbacks", async function () {
       const crate = new ROCrate({ array: true, link: true });
 
-      crate.root.name = "Subject filter test";
+      crate.root.name = "Facet test";
       crate.addEntity({
         "@id": "dataset-1",
         "@type": "Dataset",
         name: "Dataset One",
         about: { "@id": "#subject-1" },
+        author: { "@id": "#person-1" },
       });
       crate.addEntity({
         "@id": "dataset-2",
         "@type": "Dataset",
         name: "Dataset Two",
         about: { "@id": "#subject-2" },
+        author: { "@id": "#person-2" },
       });
       crate.addEntity({
         "@id": "#subject-1",
@@ -450,6 +452,39 @@ describe("preview.js", function () {
         "@type": "DefinedTerm",
         name: "School life",
       });
+      crate.addEntity({
+        "@id": "#person-1",
+        "@type": "Person",
+        name: "Alice",
+        affiliation: { "@id": "#org-1" },
+      });
+      crate.addEntity({
+        "@id": "#person-2",
+        "@type": "Person",
+        name: "Bob",
+        affiliation: { "@id": "#org-2" },
+      });
+      crate.addEntity({
+        "@id": "#language-1",
+        "@type": "Language",
+        name: "English",
+      });
+      crate.addEntity({
+        "@id": "collection-1",
+        "@type": "Dataset",
+        name: "Collection One",
+        inLanguage: { "@id": "#language-1" },
+      });
+      crate.addEntity({
+        "@id": "#org-1",
+        "@type": "Organization",
+        name: "Org One",
+      });
+      crate.addEntity({
+        "@id": "#org-2",
+        "@type": "Organization",
+        name: "Org Two",
+      });
 
       await crate.resolveContext();
 
@@ -459,20 +494,71 @@ describe("preview.js", function () {
         settings: {
           tabular: true,
         },
+        navigationByType: {
+          "http://schema.org/Dataset": [
+            { uri: "http://schema.org/name", label: "Dataset" },
+            { uri: "http://schema.org/about", label: "Subjects", addFacet: true, facetLabel: "Subject" },
+            { uri: "http://schema.org/author", label: "Contributors", addFacet: true },
+            { uri: "http://schema.org/inLanguage", label: "Language", addFacet: true },
+          ],
+          "http://schema.org/Person": [
+            { uri: "http://schema.org/name", label: "Person" },
+            { uri: "http://schema.org/affiliation", label: "Organization", addFacet: true, facetLabel: "Organization" },
+          ],
+          "http://schema.org/Language": [
+            { uri: "http://schema.org/name", label: "Language" },
+            { uri: "http://schema.org/inLanguage", label: "Collections", addFacet: true, facetLabel: "Collections" },
+          ],
+        },
         tabular: {
+          mainNavType: "Dataset",
           searchEnabled: true,
         },
       };
 
       const result = await roCrateToJSON(crate, config, []);
-      const subjectFilter = result.tabular.filters.find((filter) => filter.key === "about");
 
-      assert.ok(subjectFilter, "Subject filter should be generated for about values");
-      assert.equal(subjectFilter.items[0].label, "all", "Subject filter should include an all chip");
+      const datasetFilters = result.tabular.types.Dataset.filters;
+      assert.ok(datasetFilters, "Dataset filters should be generated");
+      assert.equal(datasetFilters.length, 3, "Dataset table should have three configured facets");
+      assert.equal(datasetFilters[0].label, "Filter by Subject", "facetLabel should drive the facet title");
+      assert.equal(datasetFilters[1].label, "Filter by Contributors", "label should be used when facetLabel is missing");
+      assert.equal(datasetFilters[2].label, "Filter by Language", "facetLabel fallback should use the column label");
 
-      const subjectLabels = subjectFilter.items.slice(1).map((item) => item.label);
-      assert.ok(subjectLabels.includes("Garden histories"), "Subject labels should use target names");
-      assert.ok(subjectLabels.includes("School life"), "Subject labels should use target names");
+      const datasetFacetKeys = datasetFilters.map((filter) => filter.key).sort();
+      assert.deepEqual(datasetFacetKeys, ["about", "author", "inlanguage"], "Dataset facet keys should match configured URIs");
+
+      const datasetSubjectLabels = datasetFilters.find((filter) => filter.key === "about").items.slice(1).map((item) => item.label);
+      assert.deepEqual(
+        datasetSubjectLabels,
+        ["Garden histories", "School life"],
+        "Dataset subject facet should use the linked subject names"
+      );
+
+      const personFilters = result.tabular.types.Person.filters;
+      assert.ok(personFilters, "Person filters should be generated");
+      assert.equal(personFilters.length, 1, "Person table should have one facet");
+      assert.equal(personFilters[0].label, "Filter by Organization", "facetLabel should be used for person facets");
+      assert.deepEqual(
+        personFilters[0].items.slice(1).map((item) => item.label),
+        ["Org One", "Org Two"],
+        "Person facet should use linked organization names"
+      );
+
+      const languageFilters = result.tabular.types.Language.filters;
+      assert.ok(languageFilters, "Language filters should be generated");
+      assert.equal(languageFilters.length, 1, "Language table should have one facet");
+      assert.equal(languageFilters[0].label, "Filter by Collections", "facetLabel should be used for language facets");
+      assert.deepEqual(
+        languageFilters[0].items.slice(1).map((item) => item.label),
+        ["Collection One"],
+        "Language facet should use reverse-linked collection names"
+      );
+
+      const datasetRow = result.tabular.types.Dataset.rows[0];
+      assert.ok(datasetRow.filterTexts.about, "Dataset rows should carry about facet search text");
+      assert.ok(datasetRow.filterTexts.author, "Dataset rows should carry author facet search text");
+      assert.ok(datasetRow.filterTexts.inlanguage, "Dataset rows should carry inLanguage facet search text");
     });
 
     it("should normalise bare property terms to URIs so layout propertyGroups can match them", async function () {

@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Funnel+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
 :root {
   --surface-page: #edf6f2;
@@ -329,8 +330,8 @@ span.info a {
   max-width: 90%;
   color: white;
   text-transform: uppercase;
-  font-family: "Bebas Neue", sans-serif;
-  font-weight: 400;
+  font-family: "Anton", sans-serif;
+  font-weight: 200;
   font-size: 66px;
 }
 
@@ -463,7 +464,7 @@ span.info a {
 .entity .property-header-row {
   margin-bottom: 8px;
   padding: 10px 30px;
-  font-size: 32px;
+  font-size: 30px;
   text-align: center;
 }
 
@@ -505,8 +506,9 @@ span.info a {
   padding: 14px 28px;
   background-color: #21462F;
   color: white;
-  font-family: "Bebas Neue", sans-serif;
-  text-transform: capitalize;
+  font-family: "Anton", sans-serif;
+  font-weight: 200;
+  text-transform: uppercase;
 }
 
 .property-row {
@@ -668,9 +670,9 @@ span.info a {
 
 .tabular-table th {
   color: white;
-  font-family: "Bebas Neue", sans-serif;
-  font-weight: 400;
-  font-size: 32px;
+  font-family: "Anton", sans-serif;
+  font-weight: 200;
+  font-size: 30px;
   text-transform: uppercase;
   background-color: #3F644D;
 }
@@ -916,7 +918,8 @@ iframe {
 }
 
 .table-view-title {
-  font-family: "Bebas Neue", sans-serif;
+  font-family: "Anton", sans-serif;
+  font-weight: 200;
   font-size: 28px;
   text-transform: uppercase;
 }
@@ -964,8 +967,10 @@ main {
   padding-top: 10px;
   padding-bottom: 10px;
   color: white;
-  font-size: 37px;
-  font-family: "Bebas Neue", sans-serif;
+  font-size: 35px;
+  font-family: "Anton", sans-serif;
+  font-weight: 200;
+  text-transform: uppercase;
 }
 
 .footer-right {
@@ -1057,9 +1062,11 @@ main {
 
 .tabular-filter-label {
   font-size: 37px;
-  font-family: "Bebas Neue", sans-serif;
+  font-family: "Anton", sans-serif;
+  font-weight: 200;
   color: #3F644D;
   margin-right: 8px;
+  text-transform: uppercase;
 }
 
 .tabular-filter-chips {
