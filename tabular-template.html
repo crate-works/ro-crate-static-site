@@ -167,7 +167,24 @@
           }
         });
 
+        updateRowAlternation();
         updateTabularCount();
+      }
+
+      function updateRowAlternation() {
+        var activeTableBody = document.querySelector(".tabular-table-active tbody");
+        if (!activeTableBody) {
+          return;
+        }
+        var visibleIndex = 0;
+        activeTableBody.querySelectorAll("tr").forEach(function (row) {
+          if (row.style.display === "none") {
+            row.style.backgroundColor = "";
+            return;
+          }
+          row.style.backgroundColor = visibleIndex % 2 === 0 ? "#ffffff" : "#f1f8f5";
+          visibleIndex++;
+        });
       }
 
       function getTabularFilterDatasetKey(key) {
@@ -326,17 +343,20 @@
               searchInput.value = "";
             }
             resetTabularFilters();
+            updateRowAlternation();
           });
           // Show the initial selected type
           var initialTable = document.querySelector(".tabular-table-wrap[data-type='" + select.value + "']");
           if (initialTable) {
             initialTable.classList.add("tabular-table-active");
+            updateRowAlternation();
           }
         } else {
           // Single type - no dropdown, just show the table
           var singleTable = document.querySelector(".tabular-table-wrap");
           if (singleTable) {
             singleTable.classList.add("tabular-table-active");
+            updateRowAlternation();
           }
         }
 
@@ -530,6 +550,7 @@
 
         <div class="tabular-table-header">
           <span class="table-view-title">
+            <!-- 
             {%- if navItems.length == 1 %}
               {{ navItems[0].shortLabel }} View
             {%- else %}
@@ -538,12 +559,13 @@
                   {{ navItem.shortLabel }} View
                 {%- endif %}
               {%- endfor %}
-            {%- endif %}
+            {%- endif %} 
+            -->
           </span>
 
           {%- if navItems.length > 1 %}
             <div class="table-view-controls">
-              <label for="tabularTypeSelect">Change</label>
+              <!-- <label for="tabularTypeSelect">Change</label> -->
 
               <select id="tabularTypeSelect">
                 {%- for navItem in navItems %}
@@ -701,6 +723,12 @@
         </div>
         {%- endif %}
         <table class="tabular-table">
+          <colgroup>
+            {%- for col in typeData.columns %}
+            {%- set colWidth = col.columnWidth or "small" %}
+            <col class="col-{{ colWidth }}" />
+            {%- endfor %}
+          </colgroup>
           <thead>
             <tr>
               {%- for col in typeData.columns %}

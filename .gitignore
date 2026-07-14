@@ -134,3 +134,5 @@ dist
 
 # Local test crate data (not tracked)
 test_data/oral-history/crate/
+
+test_data/dyirbal-workshop/data/

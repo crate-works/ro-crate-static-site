@@ -11,86 +11,16 @@
     "template": "tabular-template.html"
   },
   "navigationByType": {
-    "http://pcdm.org/models#Object": [
-      {
-        "uri": "http://schema.org/name",
-        "label": "Repository Object"
-      },
-      {
-        "uri": "http://schema.org/description",
-        "label": "Description"
-      },
-      {
-        "uri": "http://schema.org/license",
-        "label": "License"
-      }
-    ],
-    "http://pcdm.org/models#Collection": [
-      {
-        "uri": "http://schema.org/name",
-        "label": "Collection"
-      },
-      {
-        "uri": "http://schema.org/description",
-        "label": "Description"
-      },
-      {
-        "uri": "http://schema.org/about",
-        "label": "Subjects",
-        "addFacet": true,
-        "facetLabel": "Subject"
-      },
-      {
-        "uri": "http://schema.org/holdingArchive",
-        "label": "Holder"
-      },
-      {
-        "uri": "http://schema.org/accountablePerson",
-        "label": "Accountable Person"
-      }
-    ],
-    "http://schema.org/Person": [
-      {
-        "uri": "http://schema.org/name",
-        "label": "Person"
-      },
-      {
-        "uri": "http://schema.org/accountablePerson",
-        "label": "Involved in Collections"
-      },
-      {
-        "uri": "http://schema.org/author",
-        "label": "Author of Collections"
-      }
-    ],
-    "http://schema.org/Organization": [
-      {
-        "uri": "http://schema.org/name",
-        "label": "Organization"
-      },
-      {
-        "uri": "http://schema.org/holdingArchive",
-        "label": "Collections Held"
-      }
-    ],
-    "http://schema.org/Language": [
-      {
-        "uri": "http://schema.org/name",
-        "label": "Language"
-      },
-      {
-        "uri": "http://schema.org/inLanguage",
-        "label": "Collections with this Language"
-      }
-    ],
     "http://schema.org/MediaObject": [
       {
         "uri": "http://schema.org/name",
-        "label": "File"
+        "label": "File",
+        "columnWidth": "large"
       },
       {
         "uri": "http://schema.org/description",
-        "label": "Description"
+        "label": "Description",
+        "columnWidth": "large"
       },
       {
         "uri": "http://schema.org/encodingFormat",
@@ -102,14 +32,90 @@
         "uri": "http://schema.org/isPartOf",
         "label": "Part Of",
         "addFacet": true,
-        "facetLabel": "Collection"
+        "facetLabel": "Group"
       },
       {
         "uri": "https://w3id.org/ldac/terms#subjectLanguage",
-        "label": "Language"
+        "label": "Language",
+        "addFacet": true
+      }
+    ],
+    "http://pcdm.org/models#Object": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "Object",
+        "columnWidth": "large"
+      },
+      {
+        "uri": "http://schema.org/description",
+        "label": "Description",
+        "columnWidth": "medium"
+      },
+      {
+        "uri": "http://schema.org/license",
+        "label": "License",
+        "columnWidth": "medium"
+      }
+    ],
+    "http://pcdm.org/models#Collection": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "Collection",
+        "columnWidth": "large"
+      },
+      {
+        "uri": "http://schema.org/description",
+        "label": "Description",
+        "columnWidth": "medium"
+      },
+      {
+        "uri": "http://schema.org/about",
+        "label": "Subjects",
+        "columnWidth": "medium",
+        "facetLabel": "Subject"
+      }
+    ],
+    "http://schema.org/Person": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "Person",
+        "columnWidth": "large"
+      },
+      {
+        "uri": "http://schema.org/accountablePerson",
+        "label": "Involved in Collections",
+        "columnWidth": "medium"
+      },
+      {
+        "uri": "http://schema.org/author",
+        "label": "Author of Collections",
+        "columnWidth": "medium"
+      }
+    ],
+    "http://schema.org/Organization": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "Organisation",
+        "columnWidth": "large"
+      },
+      {
+        "uri": "http://schema.org/holdingArchive",
+        "label": "Collections Held",
+        "columnWidth": "medium"
+      }
+    ],
+    "http://schema.org/Language": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "Language",
+        "columnWidth": "large"
+      },
+      {
+        "uri": "http://schema.org/inLanguage",
+        "label": "Collections with this Language",
+        "columnWidth": "medium"
       }
     ]
-
   },
   "footer": {
     "text": "",
@@ -142,7 +148,7 @@
     },
     "http://pcdm.org/models#Object": {
       "defaultLabel": "RepositoryObject",
-      "customLabel": "Repository Object",
+      "customLabel": "Group",
       "customReverseLabel": "",
       "hide": false
     },
@@ -327,8 +333,8 @@
       "hide": false
     },
     "http://schema.org/Organization": {
-      "defaultLabel": "Organization",
-      "customLabel": "Organization",
+      "defaultLabel": "Organisation",
+      "customLabel": "Organisation",
       "customReverseLabel": "",
       "hide": false
     },
