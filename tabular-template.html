@@ -462,7 +462,7 @@
                         </a>
                       </span>
                     {%- elif val.value is string %}
-                      {{ val.value | urlize | replace(r/,(\s+)/, ",&nbsp;") | nl2br | safe }}
+                      {{ val.value | urlize | replace('<a ', '<a target="_blank" rel="noopener noreferrer" ') | replace(r/,(\s+)/, ",&nbsp;") | nl2br | safe }}
                     {%- elif val.value %}
                       {{ val.value }}
                     {%- else %}
