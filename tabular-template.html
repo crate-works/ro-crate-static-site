@@ -266,7 +266,13 @@
           `${found - 1} /  ${count - 1}`;
       }
 
+      {%- set showRootOnStartup = config.settings.showRootOnStartup if config and config.settings and config.settings.showRootOnStartup is not none else true %}
+      var showRootOnStartup = {{ 'true' if showRootOnStartup else 'false' }};
+
       window.addEventListener("beforeunload", function () {
+        if (!showRootOnStartup) {
+          return;
+        }
         try {
           sessionStorage.setItem("showRootOverlayOnNextLoad", "1");
         } catch (e) {
@@ -284,7 +290,7 @@
           // Ignore storage errors in restricted browser contexts.
         }
 
-        if (rootOverlay && (shouldShowRootFromReload || !window.location.hash)) {
+        if (showRootOnStartup && rootOverlay && (shouldShowRootFromReload || !window.location.hash)) {
           window.location.hash = "#root_entity_overlay";
         }
 

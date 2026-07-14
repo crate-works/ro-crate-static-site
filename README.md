@@ -206,6 +206,7 @@ Top-level config keys currently supported:
 - `maxListItemsWithoutSearch` (number): list size threshold before inline find boxes are shown.
 - `showInfoLinks` (boolean): show/hide definition info icons (`ⓘ`) across the UI.
 - `tabular` (boolean): enable/disable generation of tabular summary data (default: `false`).
+- `showRootOnStartup` (boolean, tabular template only): whether the root dataset entity's detail overlay opens automatically when the page first loads (and on reload). Set to `false` to land on the browse/tabular view instead (default: `true`). Only applies when `root.template` is `tabular-template.html`.
 
 Example:
 
@@ -214,7 +215,8 @@ Example:
     "settings": {
         "maxListItemsWithoutSearch": 10,
         "showInfoLinks": false,
-        "tabular": true
+        "tabular": true,
+        "showRootOnStartup": true
     }
 }
 ```

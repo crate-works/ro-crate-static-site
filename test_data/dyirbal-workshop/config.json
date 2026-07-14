@@ -4,12 +4,27 @@
   "settings": {
     "maxListItemsWithoutSearch": 20,
     "showInfoLinks": false,
-    "tabular": true
+    "tabular": true,
+    "showRootOnStartup": false
   },
   "root": {
     "template": "tabular-template.html"
   },
   "navigationByType": {
+    "http://pcdm.org/models#Object": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "Repository Object"
+      },
+      {
+        "uri": "http://schema.org/description",
+        "label": "Description"
+      },
+      {
+        "uri": "http://schema.org/license",
+        "label": "License"
+      }
+    ],
     "http://pcdm.org/models#Collection": [
       {
         "uri": "http://schema.org/name",
@@ -67,19 +82,45 @@
         "uri": "http://schema.org/inLanguage",
         "label": "Collections with this Language"
       }
+    ],
+    "http://schema.org/MediaObject": [
+      {
+        "uri": "http://schema.org/name",
+        "label": "File"
+      },
+      {
+        "uri": "http://schema.org/description",
+        "label": "Description"
+      },
+      {
+        "uri": "http://schema.org/encodingFormat",
+        "label": "Format",
+        "addFacet": true,
+        "facetLabel": "Format"
+      },
+      {
+        "uri": "http://schema.org/isPartOf",
+        "label": "Part Of",
+        "addFacet": true,
+        "facetLabel": "Collection"
+      },
+      {
+        "uri": "https://w3id.org/ldac/terms#subjectLanguage",
+        "label": "Language"
+      }
     ]
-    
+
   },
   "footer": {
-    "text": "Precarious Victorian Oral History Collection",
+    "text": "",
     "links": [
       {
         "label": "About",
-        "modalText": "This catalogue contains a list of precarious oral history collections in Victoria. Information about each collection was reported to the Identifying Precarious Victorian Oral History Collections Project between May–September 2025. Information about each listed collection was supplied to the project by the collection holder (or their authorised representative). Please note that many collections listed in the database are not accessible.\n\nThis database raises awareness of the extent and condition of precarious oral history collections. We hope this will spark further initiatives that support precarious oral history collections. Precarious collections are at risk of not surviving.\n\nThis database was created in late 2025 by the Identifying Precarious Victorian Oral History Collections Project, the pilot phase of the Precarious Oral Histories Project. The Project is an initiative of the Language Data Commons of Australia (LDaCA) at the Australian National University. Learn about the project here: https://precariousoralhistories.com."
+        "url": "#root_entity_overlay"
       },
       {
         "label": "Contact",
-        "url": "mailto:precariousoralhistories@anu.edu.au"
+        "url": "mailto:"
       }
     ]
   },
@@ -96,6 +137,12 @@
     "http://pcdm.org/models#Collection": {
       "defaultLabel": "RepositoryCollection",
       "customLabel": "Collection",
+      "customReverseLabel": "",
+      "hide": false
+    },
+    "http://pcdm.org/models#Object": {
+      "defaultLabel": "RepositoryObject",
+      "customLabel": "Repository Object",
       "customReverseLabel": "",
       "hide": false
     },
@@ -270,6 +317,12 @@
     "http://schema.org/name": {
       "defaultLabel": "name",
       "customLabel": "Name",
+      "customReverseLabel": "",
+      "hide": false
+    },
+    "http://schema.org/MediaObject": {
+      "defaultLabel": "MediaObject",
+      "customLabel": "File",
       "customReverseLabel": "",
       "hide": false
     },
