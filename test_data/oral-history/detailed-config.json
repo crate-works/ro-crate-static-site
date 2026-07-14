@@ -30,8 +30,8 @@
         "label": "Holder"
       },
       {
-        "uri": "http://schema.org/accountablePerson",
-        "label": "Accountable Person"
+        "uri": "http://schema.org/contentLocation",
+        "label": "Locations"
       }
     ],
     "http://schema.org/Person": [
@@ -71,7 +71,7 @@
     
   },
   "footer": {
-    "text": "Precarious Victorian Oral History Collection",
+    "text": "Precarious Oral History Collection",
     "links": [
       {
         "label": "About",
@@ -542,6 +542,28 @@
       ]
     },
     {
+      "name": "Collection Information",
+      "help": "Detailed description of how entities were created, by whom and with which tools.",
+      "inputs": [
+        "http://schema.org/agent",
+        "http://schema.org/object",
+        "http://schema.org/instrument",
+        "http://schema.org/result",
+        "http://schema.org/participant",
+        "http://schema.org/target",
+        "https://w3id.org/ldac/terms#collectionEventType",
+        "https://w3id.org/ldac/terms#collectionProtocolType",
+        "https://w3id.org/ldac/terms#hasCollectionProtocol",
+        "https://w3id.org/ldac/terms#isDeIdentified",
+        "https://w3id.org/ldac/terms#material",
+        "https://w3id.org/ldac/terms#writtenLanguageFormat",
+        "https://w3id.org/ro/terms/precarious-oral-history#collectionPurpose",
+        "https://w3id.org/ro/terms/precarious-oral-history#storageLocation",
+        "https://w3id.org/ro/terms/precarious-oral-history#catalogueListing",
+        "https://w3id.org/ro/terms/precarious-oral-history#relatedMaterials"
+      ]
+    },
+    {
       "name": "Language",
       "help": "Metadata related to the languages used, modes of communication and other linguistic classifications.",
       "inputs": [
@@ -553,20 +575,6 @@
         "https://w3id.org/ldac/terms#annotationType",
         "https://w3id.org/ldac/terms#register",
         "https://w3id.org/ro/terms/precarious-oral-history#languageNote"
-      ]
-    },
-    {
-      "name": "Access & Permissions",
-      "help": "",
-      "inputs": [
-        "http://schema.org/license",
-        "http://schema.org/creditText",
-        "http://schema.org/usageInfo",
-        "http://schema.org/isAccessibleForFree",
-        "https://w3id.org/ro/terms/precarious-oral-history#consentForms",
-        "https://w3id.org/ro/terms/precarious-oral-history#consentFutureAccess",
-        "https://w3id.org/ro/terms/precarious-oral-history#publiclyAccessible"
-
       ]
     },
     {
@@ -621,28 +629,6 @@
       ]
     },
     {
-      "name": "Provenance",
-      "help": "Detailed description of how entities were created, by whom and with which tools.",
-      "inputs": [
-        "http://schema.org/agent",
-        "http://schema.org/object",
-        "http://schema.org/instrument",
-        "http://schema.org/result",
-        "http://schema.org/participant",
-        "http://schema.org/target",
-        "https://w3id.org/ldac/terms#collectionEventType",
-        "https://w3id.org/ldac/terms#collectionProtocolType",
-        "https://w3id.org/ldac/terms#hasCollectionProtocol",
-        "https://w3id.org/ldac/terms#isDeIdentified",
-        "https://w3id.org/ldac/terms#material",
-        "https://w3id.org/ldac/terms#writtenLanguageFormat",
-        "https://w3id.org/ro/terms/precarious-oral-history#collectionPurpose",
-        "https://w3id.org/ro/terms/precarious-oral-history#storageLocation",
-        "https://w3id.org/ro/terms/precarious-oral-history#catalogueListing",
-        "https://w3id.org/ro/terms/precarious-oral-history#relatedMaterials"
-      ]
-    },
-    {
       "name": "Space & Time",
       "help": "Where and when the data was collected; the times and places it mentions or describes.",
       "inputs": [
@@ -675,6 +661,20 @@
         "https://w3id.org/ro/terms/precarious-oral-history#numInterviews",
         "https://w3id.org/ro/terms/precarious-oral-history#totalHours",
         "https://w3id.org/ro/terms/precarious-oral-history#avgInterviewLength"
+      ]
+    },
+    {
+      "name": "Access & Permissions",
+      "help": "",
+      "inputs": [
+        "http://schema.org/license",
+        "http://schema.org/creditText",
+        "http://schema.org/usageInfo",
+        "http://schema.org/isAccessibleForFree",
+        "https://w3id.org/ro/terms/precarious-oral-history#consentForms",
+        "https://w3id.org/ro/terms/precarious-oral-history#consentFutureAccess",
+        "https://w3id.org/ro/terms/precarious-oral-history#publiclyAccessible"
+
       ]
     }
   ]
