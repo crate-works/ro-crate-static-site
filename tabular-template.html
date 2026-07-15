@@ -839,7 +839,9 @@
       <!-- Heading Section -->
       {%- set effectiveAnchorId = anchorId if anchorId else item.id %}
       {%- set effectiveCloseTargetId = closeTargetId if closeTargetId else data.entryPoint %}
-      <div id="{{ effectiveAnchorId | urlencode }}" class="{{ class }}" data-close-target="{{ effectiveCloseTargetId }}">
+      {%- set entityTypeClass = "entity-type-" + (item.type[0] | replace(r/.*[:#\/]/, "") | lower) if item.type else "" %}
+
+      <div id="{{ effectiveAnchorId | urlencode }}" class="{{ class }}{{ " " + entityTypeClass if entityTypeClass else "" }}" data-close-target="{{ effectiveCloseTargetId }}">
         {%- if class == "entity" %}<div class="entity-panel">{%- endif %}
         <div class="entity-header-row">
           {%- if class == "entity" %}
@@ -925,103 +927,107 @@
           </section>
         {%- endif %}
 
-        <!--Section for files if they are avails-->
-        {%- set htmlRegex = r/(\.txt)$|(\.html?)$/i %}
-        {%- set mdRegex = r/\.md$/i %}
-        {%- set audioRegex = r/(\.mp3)|(\.ogg?)|(\.wav)$/i %}
-        {%- set imgRegex = r/(\.jpe?g)|(\.png|(\.giff?))$/i %}
-        {%- set vidRegex = r/(\.mp4)|(\.mov)$/i %}
+        <div class="entity-content-wrapper">
 
-        {%- set pdfRegex = r/pdf$/i %}
+          <!--Section for files if they are avails-->
+          {%- if item.type.includes("File") %}
 
-        {%- if item.type.includes("File") %}
-          <div class="centered-files">
-            {%- if htmlRegex.test(item.id) %}
-              <!-- TODO: fix these width="80%"s, they are not valid -->
-              <iframe
-                src="{{ item.id }}"
-                type="text/plain"
-                width="80%"
-                height="500"
-                loading="lazy"
-              ></iframe>
-            {% elif audioRegex.test(item.id) %}
-              <audio controls width="80%">
-                <source src="{{ item.id }}" />
-              </audio>
-            {% elif vidRegex.test(item.id) %}
-              <video io controls>
-                <source src="{{ item.id }}" />
-              </video>
-            {% elif imgRegex.test(item.id) %}
-              <img
-                width="100%"
-                style="object-fit: contain"
-                src="{{ item.id }}"
-                loading="lazy"
-              />
-            {% elif mdRegex.test(item.id) %}
-              {%- if item.content %}
-                {{ item.content | renderMarkdown | safe }}
-              {%- else %}
-                <p>Markdown content not available. <a href="{{ item.id | urlencode }}">View file</a></p>
+            {%- set htmlRegex = r/(\.txt)$|(\.html?)$/i %}
+            {%- set mdRegex = r/\.md$/i %}
+            {%- set audioRegex = r/(\.mp3)|(\.ogg?)|(\.wav)$/i %}
+            {%- set imgRegex = r/(\.jpe?g)|(\.png|(\.giff?))$/i %}
+            {%- set vidRegex = r/(\.mp4)|(\.mov)$/i %}
+            {%- set pdfRegex = r/pdf$/i %}
+
+            <div class="centered-files">
+              {%- if htmlRegex.test(item.id) %}
+                <!-- TODO: fix these width="80%"s, they are not valid -->
+                <iframe
+                  src="{{ item.id }}"
+                  type="text/plain"
+                  width="80%"
+                  height="500"
+                  loading="lazy"
+                ></iframe>
+              {% elif audioRegex.test(item.id) %}
+                <audio controls width="80%">
+                  <source src="{{ item.id }}" />
+                </audio>
+              {% elif vidRegex.test(item.id) %}
+                <video io controls>
+                  <source src="{{ item.id }}" />
+                </video>
+              {% elif imgRegex.test(item.id) %}
+                <img
+                  width="100%"
+                  style="object-fit: contain"
+                  src="{{ item.id }}"
+                  loading="lazy"
+                />
+              {% elif mdRegex.test(item.id) %}
+                {%- if item.content %}
+                  {{ item.content | renderMarkdown | safe }}
+                {%- else %}
+                  <p>Markdown content not available. <a href="{{ item.id | urlencode }}">View file</a></p>
+                {%- endif %}
+              {% elif pdfRegex.test(item.id) %}
+                <iframe  
+                  src="{{ item.id }}" 
+                  type="application/pdf" 
+                  width="100%" 
+                  height="600px" 
+                  loading="lazy" 
+                  title="PDF viewer"
+                ></iframe>
               {%- endif %}
-            {% elif pdfRegex.test(item.id) %}
-              <iframe  
-                src="{{ item.id }}" 
-                type="application/pdf" 
-                width="100%" 
-                height="600px" 
-                loading="lazy" 
-                title="PDF viewer"
-              ></iframe>
-            {%- endif %}
-            <a href="{{ item.id }}">Open file location</a>
-          </div>
-        {%- endif %}
-
-        {%- if not (item == data.ids[data.entryPoint] and class == "root" and data.tabular and data.tabular.hideRootSummary) %}
-        <div class="property-grid">
-          {%- set seenProps = {"@id": true,"@type": true} %}
-          {%- set propertyGroups = config.propertyGroups if config and config.propertyGroups else [] %}
-          {%- for group in propertyGroups %}
-            {%- set hasContent = false %}
-            {%- for input in group.inputs %}
-              {%- if item.props[input] %}
-                {%- set hasContent = true %}
-                {%- set seenProps = seenProps | setProp(input) %}
-              {%- endif %}
-            {%- endfor %}
-            {%- if hasContent %}
-              <div class="property-header-row">{{ group.name }}</div>
-            {%- endif %}
-            {%- for input in group.inputs %}
-              {%- if item.props[input] %}
-                {{ displayProp(input, item.props[input]) }}
-              {%- endif %}
-            {%- endfor %}
-          {%- endfor %}
-
-          {%- set hasContent = false %}
-          {%- for input, val in item.props %}
-            {%- if not seenProps[input] %}
-              {%- set hasContent = true %}
-            {%- endif %}
-          {%- endfor %}
-
-          {%- if hasContent %}
-            <div class="property-header-row">Other properties</div>
+              <a href="{{ item.id }}">Open file location</a>
+            </div>
           {%- endif %}
 
-          {%- for input, val in item.props %}
-            {%- if not seenProps[input] %}
-              {{ displayProp(input, item.props[input]) }}
-            {%- endif %}
-          {%- endfor %}
-        </div>
-        {%- endif %}
+          {%- if not (item == data.ids[data.entryPoint] and class == "root" and data.tabular and data.tabular.hideRootSummary) %}
+            <div class="property-grid">
+              {%- set seenProps = {"@id": true,"@type": true} %}
+              {%- set propertyGroups = config.propertyGroups if config and config.propertyGroups else [] %}
+              {%- for group in propertyGroups %}
+                {%- set hasContent = false %}
+                {%- for input in group.inputs %}
+                  {%- if item.props[input] %}
+                    {%- set hasContent = true %}
+                    {%- set seenProps = seenProps | setProp(input) %}
+                  {%- endif %}
+                {%- endfor %}
+                {%- if hasContent %}
+                  <div class="property-header-row">{{ group.name }}</div>
+                {%- endif %}
+                {%- for input in group.inputs %}
+                  {%- if item.props[input] %}
+                    {{ displayProp(input, item.props[input]) }}
+                  {%- endif %}
+                {%- endfor %}
+              {%- endfor %}
+
+              {%- set hasContent = false %}
+              {%- for input, val in item.props %}
+                {%- if not seenProps[input] %}
+                  {%- set hasContent = true %}
+                {%- endif %}
+              {%- endfor %}
+
+              {%- if hasContent %}
+                <div class="property-header-row">Other properties</div>
+              {%- endif %}
+
+              {%- for input, val in item.props %}
+                {%- if not seenProps[input] %}
+                  {{ displayProp(input, item.props[input]) }}
+                {%- endif %}
+              {%- endfor %}
+            </div>
+          {%- endif %}
+        </div> <!-- end of entity-content-wrapper-->
         {%- if class == "entity" %}</div>{%- endif %}
       </div>
+    
     {%- endmacro %}
 
     {{ display(data.ids[data.entryPoint], "root") }}

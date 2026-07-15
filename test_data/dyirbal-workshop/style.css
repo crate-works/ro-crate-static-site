@@ -116,6 +116,11 @@ span.type::after {
   content: "";
 }
 
+.entity-content-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
 span.info a {
   text-decoration: none;
   /*font-size: 0.9em;*/
