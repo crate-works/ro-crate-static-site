@@ -25,6 +25,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  line-height: 1.2;
 }
 
 h3 {
@@ -217,8 +218,7 @@ span.info a {
   padding: 8px 24px;
 }
 
-.entity-type-file.format-pdf .property-row,
-.entity-type-file.format-jpeg .property-row {
+.entity-display-adjacent .property-row {
   flex-direction: column;
 }
 
@@ -398,7 +398,7 @@ span.info a {
   text-decoration: none;
   /*font-size: 20px;*/
   /* font-weight: bold; */
-  line-height: 1.25;
+  /* line-height: 1.25; */
   margin-top: 0;
   padding-top: 0;
 }
@@ -459,7 +459,7 @@ span.info a {
 .entity-identifier h3,
 .entity-identifier h2.id {
   margin: 0;
-  line-height: 1.2;
+  /* line-height: 1.2; */
 }
 
 .entity-identifier h3 {
@@ -505,19 +505,22 @@ span.info a {
 .entity .property-name,
 .entity .property-value {
   /*font-size: 16px;*/
-  line-height: 2em;
   align-items: flex-start;
 }
 
 .entity .property-name {
+  font-style: italic;
+  line-height: 2em;
+}
+
+.entity.entity-display-stacked .property-name {
   flex: 0 0 24%;
   max-width: 24%;
   padding-right: 4px;
   align-items: flex-start;
-  font-style: italic;
 }
 
-.entity .property-value {
+.entity.entity-display-stacked .property-value {
   flex: 1 1 76%;
   min-width: 0;
   margin-left: 0;
@@ -584,7 +587,7 @@ span.info a {
   width: 60%;
   margin: 0 auto;
   /*font-size: 1.05em;*/
-  line-height: 1.2;
+  /* line-height: 1.2; */
   color: var(--text-strong);
 }
 
@@ -820,7 +823,7 @@ span.info a {
 .table-cell-item {
   padding: 3px 6px;
   margin: 2px 0;
-  line-height: 1.4;
+  /* line-height: 1.4; */
 }
 
 .table-cell-item:hover {
@@ -1149,7 +1152,7 @@ main {
   /* font-family: "Funnel Display", sans-serif; */
   /*font-size: 18px;*/
   /* font-weight: 700; */
-  line-height: 1;
+  line-height: 1.1;
   cursor: pointer;
   transition: background-color .2s ease, color .2s ease;
 }

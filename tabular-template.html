@@ -842,8 +842,9 @@
       {%- set entityTypeClass = "entity-type-" + (item.type[0] | replace(r/.*[:#\/]/, "") | lower) if item.type else "" %}
       {%- set encodingFormat = item.props["http://schema.org/encodingFormat"].fwd[0].value if item.props["http://schema.org/encodingFormat"] else "" %}
       {%- set formatClass = "format-" + (encodingFormat | replace(r/.*[\/]/, "") | lower | replace(r/[^a-z0-9\-]/, "-")) if encodingFormat else "" %}
+      {%- set displayClass = "entity-display-adjacent" if ("pdf" in (encodingFormat | lower) or "jpeg" in (encodingFormat | lower)) else "entity-display-stacked" %}
 
-      <div id="{{ effectiveAnchorId | urlencode }}" class="{{ class }}{{ " " + entityTypeClass if entityTypeClass else "" }}{{ " " + formatClass if formatClass else "" }}" data-close-target="{{ effectiveCloseTargetId }}">
+      <div id="{{ effectiveAnchorId | urlencode }}" class="{{ class }}{{ " " + entityTypeClass if entityTypeClass else "" }}{{ " " + formatClass if formatClass else "" }}{{ " " + displayClass }}" data-close-target="{{ effectiveCloseTargetId }}">
         {%- if class == "entity" %}<div class="entity-panel">{%- endif %}
   
           <!-- Heading Section -->

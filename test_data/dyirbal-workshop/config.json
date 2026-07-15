@@ -410,132 +410,7 @@
       "customReverseLabel": "Collection Protocol Of",
       "hide": false
     },
-    "https://w3id.org/ro/terms/precarious-oral-history#analogueDigital": {
-      "defaultLabel": "analogueDigital",
-      "customLabel": "Analogue Digital",
-      "customReverseLabel": "",
-      "hide": true
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#audioFormat": {
-      "defaultLabel": "audioFormat",
-      "customLabel": "Audio Format",
-      "customReverseLabel": "Format Of Audio",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#audioQuality": {
-      "defaultLabel": "audioQuality",
-      "customLabel": "Audio Quality",
-      "customReverseLabel": "Quality Of Audio For",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#audiovisualFormat": {
-      "defaultLabel": "audiovisualFormat",
-      "customLabel": "Interview Format",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#avFormat": {
-      "defaultLabel": "avFormat",
-      "customLabel": "Audiovisual Format",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#avgInterviewLength": {
-      "defaultLabel": "avgInterviewLength",
-      "customLabel": "Average Interview Length",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#catalogueListing": {
-      "defaultLabel": "catalogueListing",
-      "customLabel": "Catalogue Listing",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#collectionPurpose": {
-      "defaultLabel": "collectionPurpose",
-      "customLabel": "Collection Purpose",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#consentForms": {
-      "defaultLabel": "consentForms",
-      "customLabel": "Consent Forms",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#consentFutureAccess": {
-      "defaultLabel": "consentFutureAccess",
-      "customLabel": "Consent Future Access",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#languageDescription": {
-      "defaultLabel": "languageDescription",
-      "customLabel": "Language Description",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#numInterviews": {
-      "defaultLabel": "numInterviews",
-      "customLabel": "Number Of Interviews",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#otherInfo": {
-      "defaultLabel": "otherInfo",
-      "customLabel": "Other Info",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#outputs": {
-      "defaultLabel": "outputs",
-      "customLabel": "Outputs",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#overviews": {
-      "defaultLabel": "overviews",
-      "customLabel": "Overviews",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#physicalCondition": {
-      "defaultLabel": "physicalCondition",
-      "customLabel": "Physical Condition",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#relatedMaterials": {
-      "defaultLabel": "relatedMaterials",
-      "customLabel": "Related Materials",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#storageLocation": {
-      "defaultLabel": "storageLocation",
-      "customLabel": "Storage Location",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#timedSummaries": {
-      "defaultLabel": "timedSummaries",
-      "customLabel": "Timed Summaries",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#totalHours": {
-      "defaultLabel": "totalHours",
-      "customLabel": "Total Hours",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#transcripts": {
-      "defaultLabel": "transcripts",
-      "customLabel": "Transcripts",
-      "customReverseLabel": "",
-      "hide": false
-    },
+   
     "http://schema.org/contributor": {
       "defaultLabel": "contributor",
       "customLabel": "Contributor",
@@ -557,24 +432,6 @@
     "http://schema.org/value": {
       "defaultLabel": "value",
       "customLabel": "Value",
-      "customReverseLabel": "",
-      "hide": false
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#firstNationsFocus": {
-      "defaultLabel": "firstNationsFocus",
-      "customLabel": "First Nations Focus",
-      "customReverseLabel": "",
-      "hide": true
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#languageNote": {
-      "defaultLabel": "languageNote",
-      "customLabel": "Language Note",
-      "customReverseLabel": "",
-      "hide": true
-    },
-    "https://w3id.org/ro/terms/precarious-oral-history#publiclyAccessible": {
-      "defaultLabel": "publiclyAccessible",
-      "customLabel": "Publicly Accessible",
       "customReverseLabel": "",
       "hide": false
     }
@@ -610,8 +467,7 @@
         "https://w3id.org/ldac/terms#linguisticGenre",
         "https://w3id.org/ldac/terms#orthographicNotes",
         "https://w3id.org/ldac/terms#annotationType",
-        "https://w3id.org/ldac/terms#register",
-        "https://w3id.org/ro/terms/precarious-oral-history#languageNote"
+        "https://w3id.org/ldac/terms#register"
       ]
     },
     {
@@ -621,10 +477,7 @@
         "http://schema.org/license",
         "http://schema.org/creditText",
         "http://schema.org/usageInfo",
-        "http://schema.org/isAccessibleForFree",
-        "https://w3id.org/ro/terms/precarious-oral-history#consentForms",
-        "https://w3id.org/ro/terms/precarious-oral-history#consentFutureAccess",
-        "https://w3id.org/ro/terms/precarious-oral-history#publiclyAccessible"
+        "http://schema.org/isAccessibleForFree"
 
       ]
     },
@@ -694,11 +547,7 @@
         "https://w3id.org/ldac/terms#hasCollectionProtocol",
         "https://w3id.org/ldac/terms#isDeIdentified",
         "https://w3id.org/ldac/terms#material",
-        "https://w3id.org/ldac/terms#writtenLanguageFormat",
-        "https://w3id.org/ro/terms/precarious-oral-history#collectionPurpose",
-        "https://w3id.org/ro/terms/precarious-oral-history#storageLocation",
-        "https://w3id.org/ro/terms/precarious-oral-history#catalogueListing",
-        "https://w3id.org/ro/terms/precarious-oral-history#relatedMaterials"
+        "https://w3id.org/ldac/terms#writtenLanguageFormat"
       ]
     },
     {
@@ -716,24 +565,6 @@
         "http://schema.org/address",
         "http://schema.org/creativeWorkStatus"
 
-      ]
-    },
-    {
-      "name": "Audio Format & Quality",
-      "help": "The technical characteristics of the audio and audiovisual files.",
-      "inputs": [
-        "https://w3id.org/ro/terms/precarious-oral-history#audiovisualFormat",
-        "https://w3id.org/ro/terms/precarious-oral-history#analogueDigital",
-        "https://w3id.org/ro/terms/precarious-oral-history#audioFormat",
-        "https://w3id.org/ro/terms/precarious-oral-history#avFormat",
-        "https://w3id.org/ro/terms/precarious-oral-history#physicalCondition",
-        "https://w3id.org/ro/terms/precarious-oral-history#audioQuality",
-        "https://w3id.org/ro/terms/precarious-oral-history#transcripts",
-        "https://w3id.org/ro/terms/precarious-oral-history#timedSummaries",
-        "https://w3id.org/ro/terms/precarious-oral-history#overviews",
-        "https://w3id.org/ro/terms/precarious-oral-history#numInterviews",
-        "https://w3id.org/ro/terms/precarious-oral-history#totalHours",
-        "https://w3id.org/ro/terms/precarious-oral-history#avgInterviewLength"
       ]
     }
   ]
