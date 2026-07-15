@@ -836,13 +836,17 @@
     {%- endmacro %}
 
     {%- macro display(item, class, anchorId, closeTargetId) %}
-      <!-- Heading Section -->
+      <!-- Modal -->
       {%- set effectiveAnchorId = anchorId if anchorId else item.id %}
       {%- set effectiveCloseTargetId = closeTargetId if closeTargetId else data.entryPoint %}
       {%- set entityTypeClass = "entity-type-" + (item.type[0] | replace(r/.*[:#\/]/, "") | lower) if item.type else "" %}
+      {%- set encodingFormat = item.props["http://schema.org/encodingFormat"].fwd[0].value if item.props["http://schema.org/encodingFormat"] else "" %}
+      {%- set formatClass = "format-" + (encodingFormat | replace(r/.*[\/]/, "") | lower | replace(r/[^a-z0-9\-]/, "-")) if encodingFormat else "" %}
 
-      <div id="{{ effectiveAnchorId | urlencode }}" class="{{ class }}{{ " " + entityTypeClass if entityTypeClass else "" }}" data-close-target="{{ effectiveCloseTargetId }}">
+      <div id="{{ effectiveAnchorId | urlencode }}" class="{{ class }}{{ " " + entityTypeClass if entityTypeClass else "" }}{{ " " + formatClass if formatClass else "" }}" data-close-target="{{ effectiveCloseTargetId }}">
         {%- if class == "entity" %}<div class="entity-panel">{%- endif %}
+  
+          <!-- Heading Section -->
         <div class="entity-header-row">
           {%- if class == "entity" %}
           <a href="#{{ effectiveCloseTargetId | urlencode }}" class="entity-close" aria-label="Close summary" title="Close">

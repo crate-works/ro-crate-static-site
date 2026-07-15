@@ -116,8 +116,14 @@ span.type::after {
   content: "";
 }
 
+
 .entity-content-wrapper {
   display: flex;
+  flex-direction: column;
+}
+
+.entity-type-file.format-pdf .entity-content-wrapper,
+.entity-type-file.format-jpeg .entity-content-wrapper {
   flex-direction: row-reverse;
 }
 
@@ -211,7 +217,8 @@ span.info a {
   padding: 8px 24px;
 }
 
-.entity-type-file .property-row {
+.entity-type-file.format-pdf .property-row,
+.entity-type-file.format-jpeg .property-row {
   flex-direction: column;
 }
 
