@@ -27,10 +27,36 @@ Options:
   -l, --layout <layoutPath>           Filepath or URL to a layout file in JSON format. This forces the script to use the specified layout instead of the default or the one present in the
                                       crate. Use a raw link if the URL is from GitHub. (Default:
                                       "https://github.com/Language-Research-Technology/crate-o/blob/main/src/lib/components/default_layout.json")
-  -m --multipage-config <configPath>  Filepath or URL to a multipage configuration file in JSON format.
+    -c, --config <configPath>            Filepath or URL to a configuration file in JSON format.
+    -m, --multipage-config <configPath>  Deprecated alias for --config.
+    -s, --style <stylePath>              Filepath or URL to a CSS file. Overrides config style and default.css.
+    --generate-config <configPath>       Generate a starter config file with empty structure and termMapping for crate class/property URIs.
+    --rm                                 Remove ro-crate-preview.html and ro-crate-preview_html directory from the crate.
   -h, --help                          display help for command
 ```
 
+### CSS loading
+
+CSS is loaded by the generator and injected into the HTML template (not linked with a stylesheet URL).
+
+Style resolution order:
+
+1. CLI `--style`
+2. Config `style` (or `root.style`)
+3. `default.css` in project root
+
+Examples:
+
+```bash
+# Use default.css
+npx roc-html test_data/COOEE/crate
+
+# Use style from config
+npx roc-html -c test_data/oral-history/oral-history-single-page-config.json test_data/oral-history/crate
+
+# Override style from CLI
+npx roc-html --style test_data/oral-history/oral-history-blue.css test_data/COOEE/crate
+```
 
 ### About Page
 
@@ -62,10 +88,10 @@ Sample crate:
 npx roc-html test_data/sample
 ```
 
-Farms to freeways -- multipages 
+Sample crate with tabular summary and no multipage output:
 
 ```
-npx roc-html  -m test_data/f2fnew/f2fconfig.json test_data/f2fnew/data
+npx roc-html -c test_data/sample/sample-config.json test_data/sample/crate
 ```
 
 ## Library Usage
@@ -81,6 +107,122 @@ const crate = await ROCrate.create(json);
 const previewContent = await renderSinglePage({ crate });
 await writeFile('./preview.html', previewContent, 'utf-8');
 ```
+
+Farms to freeways -- multiple pages  
+
+```
+npx roc-html -c test_data/f2fnew/f2fconfig.json test_data/f2fnew/data
+```
+
+### Optional tabular summary settings for multipage configs
+
+You can add a `tabular` block to a multipage config to generate 
+tablular summary on the root page.
+
+```json
+{
+    "types": {
+        "RepositoryCollection": {
+            "template": "test_data/oral-history/templates/oral-history-collection-template.html"
+        }
+    },
+    "root": {
+        "template": "test_data/oral-history/templates/oral-history-root-template.html"
+    },
+    "tabular": {
+        "mainNavType": "http://pcdm.org/models#Collection",
+        "columnLimit": 6,
+        "searchEnabled": true,
+        "hideColumns": ["http://purl.org/dc/terms/conformsTo"],
+        "includeFallbackColumns": true
+    }
+}
+```
+
+You can also provide explicit per-type navigation and columns with `navigationByType`:
+
+```json
+{
+    "multipage": false,
+    "style": "oral-history-blue.css",
+    "root": {"template": "template.html"},
+    "navigationByType": {
+        "http://pcdm.org/models#Collection": [
+            {"uri": "http://schema.org/name", "label": "Collection name"},
+            {"uri": "http://schema.org/description", "label": "Collection description"},
+            {"uri": "http://schema.org/about", "label": "Collection subjects"},
+            {"uri": "https://schema.org/holdingArchive", "label": "Collection holder"},
+            {"uri": "http://schema.org/author", "label": "Contributor"}
+        ]
+    },
+    "tabular": {
+        "mainNavType": "http://pcdm.org/models#Collection",
+        "columnLimit": 5,
+        "searchEnabled": true,
+        "columnSearchEnabled": false,
+        "includeFallbackColumns": true
+    }
+}
+```
+
+How columns are chosen:
+
+- Column order follows `propertyGroups` from the resolved layout (or legacy `inputGroups` when present).
+- If `navigationByType` is present, dropdown order follows config order.
+- Columns with no values for that type are skipped.
+- If `includeFallbackColumns` is `true`, extra populated properties not listed in `propertyGroups` can be appended.
+- `columnLimit` caps the number of columns shown in the summary table.
+- `columnSearchEnabled` enables per-column search inputs in the table header.
+- `mainNavType` accepts either a bare type name or a full type URI.
+- `hideColumns` hides columns by URI (with local-name matching fallback) when `navigationByType` is not configured.
+- Internal default tabular config hides `conformsTo` columns unless explicitly re-added via `navigationByType`.
+
+`navigationByType` accepts full type URIs. Matching includes a local-name fallback so equivalent URI variants (for example `http`/`https`) still resolve.
+
+If you want tabular summaries without generating per-entity pages, set:
+
+```json
+"multipage": false
+```
+
+in the config file.
+
+### Config reference
+
+Top-level config keys currently supported:
+
+- `multipage`: boolean. Generate per-entity pages when `true`.
+- `style`: CSS path or URL.
+- `root.template`: template path for the root page.
+- `propertyGroups`: ordered property groups used in the property panel.
+- `inputGroups`: legacy alias for `propertyGroups` (still accepted for backward compatibility).
+- `navigationByType`: optional explicit tabular columns and labels by type URI.
+- `tabular`: tabular summary behavior (`mainNavType`, `columnLimit`, `searchEnabled`, `columnSearchEnabled`, `includeFallbackColumns`, `hideColumns`).
+- `termMapping`: label and visibility overrides for classes/properties.
+- `settings`: UI behavior settings.
+
+`settings` keys:
+
+- `maxListItemsWithoutSearch` (number): list size threshold before inline find boxes are shown.
+- `showInfoLinks` (boolean): show/hide definition info icons (`ⓘ`) across the UI.
+- `tabular` (boolean): enable/disable generation of tabular summary data (default: `false`).
+
+Example:
+
+```json
+{
+    "settings": {
+        "maxListItemsWithoutSearch": 10,
+        "showInfoLinks": false,
+        "tabular": true
+    }
+}
+```
+
+### Demo styles
+
+- Default style: `default.css`
+- Oral-history blue demo: `test_data/oral-history/oral-history-blue.css`
 
 ## Contributing
 

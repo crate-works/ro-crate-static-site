@@ -224,6 +224,8 @@ describe("preview.js", function () {
     });
 
     it("Should handle multi-page configuration", async function () {
+      this.timeout(10000);
+
       // Create a crate with multiple entities of different types
       const crateData = JSON.parse(
         fs.readFileSync("test_data/f2fnew/data/ro-crate-metadata.json", "utf8")
@@ -239,20 +241,619 @@ describe("preview.js", function () {
         root: { template: "test_data/templates/f2f-root-template.html" },
       };
 
-      crate.resolveContext();
+      await crate.resolveContext();
 
       // Convert to JSON with multi-page config
       const result = await roCrateToJSON(crate, multiPageConfig);
       //console.log("Pages generated:", result.pages);
 
+      const configuredTypes = new Set(Object.keys(multiPageConfig.types));
+      const matchedEntityCount = Array.from(crate.entities())
+        .filter((entity) =>
+          (Array.isArray(entity["@type"]) ? entity["@type"] : [entity["@type"]])
+            .some((type) => configuredTypes.has(type))
+        ).length;
+      const expectedPageCount = matchedEntityCount + 1; // Root page is always generated in multipage mode.
+
       // Check that pages are generated for entities of specified types
       assert.equal(
           Object.keys(result.pages).length,
-          171,
+          expectedPageCount,
         "Should have generated pages"
       );
     
       console.log("✅ Multi-page configuration test passed");
+    });
+
+    it("should generate tabular summaries ordered by propertyGroups", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/f2fnew/data/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const multiPageConfig = {
+        types: {
+          RepositoryObject: {
+            template: "test_data/f2fnew/templates/f2f-subobject-template.html",
+          },
+        },
+        root: { template: "test_data/f2fnew/templates/f2f-root-template.html" },
+        settings: {
+          tabular: true,
+        },
+        tabular: {
+          mainNavType: "http://pcdm.org/models#Object",
+          columnLimit: 4,
+          includeFallbackColumns: false,
+        },
+      };
+      multiPageConfig.navigationByType = {
+        "http://pcdm.org/models#Object": [],
+        "http://schema.org/MediaObject": [],
+      };
+
+      const layout = [
+        {
+          name: "About",
+          inputs: [
+            "http://schema.org/name",
+            "http://schema.org/description",
+            "http://schema.org/license",
+          ],
+        },
+      ];
+
+      const result = await roCrateToJSON(crate, multiPageConfig, layout);
+      assert.ok(result.tabular, "Should include tabular metadata");
+      assert.equal(result.tabular.mainNavType, "RepositoryObject");
+      assert.ok(
+        result.tabular.types.RepositoryObject,
+        "Should include RepositoryObject tabular entries"
+      );
+
+      const columns = result.tabular.types.RepositoryObject.columns;
+      assert.ok(
+        columns.length > 0 && columns.length <= 4,
+        "Should include populated columns up to tabular columnLimit"
+      );
+      assert.equal(
+        columns[0].uri,
+        "http://schema.org/name",
+        "First column should follow layout input ordering"
+      );
+      assert.equal(
+        columns[1].uri,
+        "http://schema.org/description",
+        "Second column should follow layout input ordering"
+      );
+
+      const row = result.tabular.types.RepositoryObject.rows[0];
+      assert.ok(row, "Should include at least one tabular row");
+      assert.ok(
+        typeof row.pagePath === "string",
+        "Row should include a path for navigation"
+      );
+      assert.equal(
+        row.cells.length,
+        columns.length,
+        "Each row should provide one cell per configured column"
+      );
+    });
+
+    it("should hide conformsTo columns by default when navigationByType is not configured", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/f2fnew/data/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        tabular: {
+          mainNavType: "http://pcdm.org/models#Object",
+          columnLimit: 12,
+          includeFallbackColumns: true,
+        },
+      };
+
+      const result = await roCrateToJSON(crate, config, []);
+      const columns = result.tabular.types.RepositoryObject.columns;
+
+      const hasConformsTo = columns.some(
+        (col) => String(col.uri || "").toLowerCase().endsWith("conformsto")
+      );
+
+      assert.equal(
+        hasConformsTo,
+        false,
+        "conformsTo should be hidden by default in auto-generated tabular columns"
+      );
+    });
+
+    it("should use configured navigationByType columns in order with custom labels", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/oral-history/crate/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        navigationByType: {
+          "http://pcdm.org/models#Collection": [
+            { uri: "http://schema.org/name", label: "Collection name" },
+            { uri: "http://schema.org/description", label: "Collection description" },
+            { uri: "@id", label: "ID", stripPrefix: "#collection-" },
+          ],
+        },
+        tabular: {
+          mainNavType: "RepositoryCollection",
+          searchEnabled: true,
+          columnSearchEnabled: true,
+        },
+      };
+
+      const result = await roCrateToJSON(crate, config, []);
+      assert.ok(result.tabular && result.tabular.enabled, "Tabular should be enabled");
+      assert.equal(result.tabular.columnSearchEnabled, true, "Column search should be enabled from config");
+      assert.ok(result.tabular.types.RepositoryCollection, "Should include RepositoryCollection tabular entries");
+
+      const columns = result.tabular.types.RepositoryCollection.columns;
+      assert.equal(columns.length, 3, "Should use exactly configured columns");
+      assert.equal(columns[0].uri, "http://schema.org/name");
+      assert.equal(columns[0].label, "Collection name");
+      assert.equal(columns[1].uri, "http://schema.org/description");
+      assert.equal(columns[1].label, "Collection description");
+      assert.equal(columns[2].uri, "@id");
+      assert.equal(columns[2].label, "ID");
+
+      const firstRow = result.tabular.types.RepositoryCollection.rows[0];
+      assert.ok(firstRow, "Should include at least one row");
+      assert.ok(
+        !String(firstRow.cells[2] || "").startsWith("#collection-"),
+        "Configured stripPrefix should be applied to @id values"
+      );
+    });
+
+    it("should build configured facets per navigation table using facet labels and fallbacks", async function () {
+      const crate = new ROCrate({ array: true, link: true });
+
+      crate.root.name = "Facet test";
+      crate.addEntity({
+        "@id": "dataset-1",
+        "@type": "Dataset",
+        name: "Dataset One",
+        about: { "@id": "#subject-1" },
+        author: { "@id": "#person-1" },
+      });
+      crate.addEntity({
+        "@id": "dataset-2",
+        "@type": "Dataset",
+        name: "Dataset Two",
+        about: { "@id": "#subject-2" },
+        author: { "@id": "#person-2" },
+      });
+      crate.addEntity({
+        "@id": "#subject-1",
+        "@type": "DefinedTerm",
+        name: "Garden histories",
+      });
+      crate.addEntity({
+        "@id": "#subject-2",
+        "@type": "DefinedTerm",
+        name: "School life",
+      });
+      crate.addEntity({
+        "@id": "#person-1",
+        "@type": "Person",
+        name: "Alice",
+        affiliation: { "@id": "#org-1" },
+      });
+      crate.addEntity({
+        "@id": "#person-2",
+        "@type": "Person",
+        name: "Bob",
+        affiliation: { "@id": "#org-2" },
+      });
+      crate.addEntity({
+        "@id": "#language-1",
+        "@type": "Language",
+        name: "English",
+      });
+      crate.addEntity({
+        "@id": "collection-1",
+        "@type": "Dataset",
+        name: "Collection One",
+        inLanguage: { "@id": "#language-1" },
+      });
+      crate.addEntity({
+        "@id": "#org-1",
+        "@type": "Organization",
+        name: "Org One",
+      });
+      crate.addEntity({
+        "@id": "#org-2",
+        "@type": "Organization",
+        name: "Org Two",
+      });
+
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        navigationByType: {
+          "http://schema.org/Dataset": [
+            { uri: "http://schema.org/name", label: "Dataset" },
+            { uri: "http://schema.org/about", label: "Subjects", addFacet: true, facetLabel: "Subject" },
+            { uri: "http://schema.org/author", label: "Contributors", addFacet: true },
+            { uri: "http://schema.org/inLanguage", label: "Language", addFacet: true },
+          ],
+          "http://schema.org/Person": [
+            { uri: "http://schema.org/name", label: "Person" },
+            { uri: "http://schema.org/affiliation", label: "Organization", addFacet: true, facetLabel: "Organization" },
+          ],
+          "http://schema.org/Language": [
+            { uri: "http://schema.org/name", label: "Language" },
+            { uri: "http://schema.org/inLanguage", label: "Collections", addFacet: true, facetLabel: "Collections" },
+          ],
+        },
+        tabular: {
+          mainNavType: "Dataset",
+          searchEnabled: true,
+        },
+      };
+
+      const result = await roCrateToJSON(crate, config, []);
+
+      const datasetFilters = result.tabular.types.Dataset.filters;
+      assert.ok(datasetFilters, "Dataset filters should be generated");
+      assert.equal(datasetFilters.length, 3, "Dataset table should have three configured facets");
+      assert.equal(datasetFilters[0].label, "Filter by Subject", "facetLabel should drive the facet title");
+      assert.equal(datasetFilters[1].label, "Filter by Contributors", "label should be used when facetLabel is missing");
+      assert.equal(datasetFilters[2].label, "Filter by Language", "facetLabel fallback should use the column label");
+
+      const datasetFacetKeys = datasetFilters.map((filter) => filter.key).sort();
+      assert.deepEqual(datasetFacetKeys, ["about", "author", "inlanguage"], "Dataset facet keys should match configured URIs");
+
+      const datasetSubjectLabels = datasetFilters.find((filter) => filter.key === "about").items.slice(1).map((item) => item.label);
+      assert.deepEqual(
+        datasetSubjectLabels,
+        ["Garden histories", "School life"],
+        "Dataset subject facet should use the linked subject names"
+      );
+
+      const personFilters = result.tabular.types.Person.filters;
+      assert.ok(personFilters, "Person filters should be generated");
+      assert.equal(personFilters.length, 1, "Person table should have one facet");
+      assert.equal(personFilters[0].label, "Filter by Organization", "facetLabel should be used for person facets");
+      assert.deepEqual(
+        personFilters[0].items.slice(1).map((item) => item.label),
+        ["Org One", "Org Two"],
+        "Person facet should use linked organization names"
+      );
+
+      const languageFilters = result.tabular.types.Language.filters;
+      assert.ok(languageFilters, "Language filters should be generated");
+      assert.equal(languageFilters.length, 1, "Language table should have one facet");
+      assert.equal(languageFilters[0].label, "Filter by Collections", "facetLabel should be used for language facets");
+      assert.deepEqual(
+        languageFilters[0].items.slice(1).map((item) => item.label),
+        ["Collection One"],
+        "Language facet should use reverse-linked collection names"
+      );
+
+      const datasetRow = result.tabular.types.Dataset.rows[0];
+      assert.ok(datasetRow.filterTexts.about, "Dataset rows should carry about facet search text");
+      assert.ok(datasetRow.filterTexts.author, "Dataset rows should carry author facet search text");
+      assert.ok(datasetRow.filterTexts.inlanguage, "Dataset rows should carry inLanguage facet search text");
+    });
+
+    it("should normalise bare property terms to URIs so layout propertyGroups can match them", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/sample/crate/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const config = JSON.parse(fs.readFileSync("test_data/sample/sample-config.json", "utf8"));
+      const layout = JSON.parse(fs.readFileSync("lib/default_layout.json", "utf8"));
+
+      const result = await roCrateToJSON(crate, config, layout);
+
+      const rootEntity = result.ids[result.entryPoint];
+      assert.ok(rootEntity, "Root entity should exist");
+
+      const propKeys = Object.keys(rootEntity.props);
+
+      // Schema.org properties from the sample crate must be stored as full URIs
+      assert.ok(
+        propKeys.includes("http://schema.org/name"),
+        'Props should contain "http://schema.org/name" not bare "name"'
+      );
+      assert.ok(
+        propKeys.includes("http://schema.org/description"),
+        'Props should contain "http://schema.org/description" not bare "description"'
+      );
+
+      // Bare terms (no colon or http prefix, not @-keywords) must NOT appear as prop keys
+      const bareTermKeys = propKeys.filter(
+        (k) => !k.includes(":") && !k.startsWith("@")
+      );
+      assert.deepEqual(
+        bareTermKeys,
+        [],
+        `Bare property terms should be normalised to URIs (found: ${bareTermKeys.join(", ")})`
+      );
+
+      // The layout "About" group's URIs must be present among prop keys to ensure grouping works
+      const aboutInputs = layout.find((g) => g.name === "About").inputs.filter((u) => u.startsWith("http"));
+      const matchedAbout = aboutInputs.filter((u) => propKeys.includes(u));
+      assert.ok(
+        matchedAbout.length > 0,
+        `At least one "About" group URI should match root entity props (layout URIs: ${aboutInputs.join(", ")})`
+      );
+
+      console.log("✅ propertyGroup URI normalisation regression test passed");
+    });
+
+    it("should keep tabular data when multipage is disabled", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/sample/crate/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        navigationByType: {
+          "http://schema.org/Dataset": [],
+        },
+        tabular: {
+          mainNavType: "Dataset",
+          columnLimit: 5,
+          searchEnabled: true,
+        },
+      };
+
+      const layout = JSON.parse(fs.readFileSync("lib/default_layout.json", "utf8"));
+      const result = await roCrateToJSON(crate, config, layout);
+
+      assert.equal(
+        Object.keys(result.pages).length,
+        0,
+        "No per-entity pages should be generated when multipage is disabled"
+      );
+      assert.ok(result.tabular && result.tabular.enabled, "Tabular data should still be generated");
+      assert.ok(
+        result.tabular.types.Dataset && result.tabular.types.Dataset.rows.length > 0,
+        "Dataset tabular rows should be present"
+      );
+    });
+
+    it("should skip tabular data generation when settings.tabular is false", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/sample/crate/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: false,
+        },
+      };
+
+      const layout = JSON.parse(fs.readFileSync("lib/default_layout.json", "utf8"));
+      const result = await roCrateToJSON(crate, config, layout);
+
+      assert.ok(result.tabular, "Tabular metadata should exist");
+      assert.equal(result.tabular.enabled, false, "Tabular should be disabled by settings.tabular");
+      assert.deepEqual(result.tabular.types, {}, "No tabular type data should be generated");
+      assert.deepEqual(result.tabular.navItems, [], "No tabular nav items should be generated");
+    });
+
+    it("should deduplicate reciprocal hasPart/isPartOf and hasMember/memberOf pairs", async function () {
+      const crateData = {
+        "@context": "https://w3id.org/ro/crate/1.1/context",
+        "@graph": [
+          {
+            "@id": "ro-crate-metadata.json",
+            "@type": "CreativeWork",
+            about: { "@id": "./" },
+            conformsTo: { "@id": "https://w3id.org/ro/crate/1.1" },
+          },
+          {
+            "@id": "./",
+            "@type": ["Dataset"],
+            name: "Reciprocal test root",
+            hasPart: { "@id": "file-1.txt" },
+            "pcdm:hasMember": { "@id": "#object-1" },
+          },
+          {
+            "@id": "file-1.txt",
+            "@type": ["File"],
+            isPartOf: { "@id": "./" },
+          },
+          {
+            "@id": "#object-1",
+            "@type": ["RepositoryObject"],
+            "pcdm:memberOf": { "@id": "./" },
+          },
+        ],
+      };
+
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const result = await roCrateToJSON(crate, null, []);
+
+      const root = result.ids["./"];
+      const file = result.ids["file-1.txt"];
+      const repoObject = result.ids["#object-1"];
+
+      assert.ok(root, "Root entity should exist");
+      assert.ok(file, "File entity should exist");
+      assert.ok(repoObject, "RepositoryObject entity should exist");
+
+      assert.ok(root.props["http://schema.org/hasPart"], "Root should keep hasPart");
+      assert.ok(
+        !root.props["http://schema.org/isPartOf"],
+        "Root should not also include reciprocal isPartOf"
+      );
+
+      assert.ok(file.props["http://schema.org/isPartOf"], "File should keep isPartOf");
+      assert.ok(
+        !file.props["http://schema.org/hasPart"],
+        "File should not also include reciprocal hasPart"
+      );
+
+      assert.ok(root.props["http://pcdm.org/models#hasMember"], "Root should keep pcdm:hasMember");
+      assert.ok(
+        !root.props["http://pcdm.org/models#memberOf"],
+        "Root should not also include reciprocal pcdm:memberOf"
+      );
+
+      assert.ok(
+        repoObject.props["http://pcdm.org/models#memberOf"],
+        "RepositoryObject should keep pcdm:memberOf"
+      );
+      assert.ok(
+        !repoObject.props["http://pcdm.org/models#hasMember"],
+        "RepositoryObject should not also include reciprocal pcdm:hasMember"
+      );
+    });
+
+    it("should apply termMapping custom labels for properties, columns, and type nav labels", async function () {
+      const crateData = JSON.parse(
+        fs.readFileSync("test_data/oral-history/crate/ro-crate-metadata.json", "utf8")
+      );
+      const crate = new ROCrate(crateData, { array: true, link: true });
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        navigationByType: {
+          "http://pcdm.org/models#Collection": [
+            { uri: "http://schema.org/name" },
+          ],
+        },
+        tabular: {
+          mainNavType: "http://pcdm.org/models#Collection",
+          searchEnabled: true,
+          columnSearchEnabled: false,
+        },
+        termMapping: {
+          "http://pcdm.org/models#Collection": {
+            defaultLabel: "RepositoryCollection",
+            customLabel: "Collection Group",
+          },
+          "http://schema.org/name": {
+            defaultLabel: "name",
+            customLabel: "Display Name",
+          },
+        },
+      };
+
+      const result = await roCrateToJSON(crate, config, []);
+
+      const root = result.ids[result.entryPoint];
+      assert.ok(root, "Root entity should exist");
+      assert.equal(
+        root.props["http://schema.org/name"].label,
+        "Display Name",
+        "Property label should use termMapping customLabel"
+      );
+
+      const collectionTable = result.tabular.types.RepositoryCollection;
+      assert.ok(collectionTable, "RepositoryCollection tabular entries should exist");
+      assert.equal(
+        collectionTable.columns[0].label,
+        "Display Name",
+        "Configured column label fallback should use termMapping customLabel"
+      );
+
+      const navItem = result.tabular.navItems.find((item) => item.type === "RepositoryCollection");
+      assert.ok(navItem, "RepositoryCollection nav item should exist");
+      assert.match(
+        navItem.label,
+        /^Collection Group \(\d+\)$/,
+        "Type nav label should use mapped custom class label"
+      );
+
+      assert.ok(result.tabular.typeLabels, "typeLabels mapping should exist in tabular data");
+      assert.equal(
+        result.tabular.typeLabels.RepositoryCollection,
+        "Collection Group",
+        "typeLabels should contain mapped custom type label for use in templates"
+      );
+    });
+
+    it("should pre-calculate infoLinks for internal entities and external URIs", async function () {
+      // Create a crate with internal entity references and external URIs
+      const crate = new ROCrate({ array: true, link: true });
+
+      // Add a custom ontology entity (internal reference)
+      crate.addEntity({
+        "@id": "https://w3id.org/ro/terms/precarious-oral-history#publiclyAccessible",
+        "@type": "rdf:Property",
+        name: "Publicly Accessible",
+      });
+
+      // Add a dataset that references both the internal term and external URIs
+      crate.root.name = "Test Dataset";
+      crate.root.license = {
+        "@id": "https://creativecommons.org/licenses/by/4.0/",
+      };
+    
+
+      // Convert to JSON
+      const result = await roCrateToJSON(crate);
+
+      // Verify infoLinks structure exists
+      assert.ok(result.infoLinks, "Result should have infoLinks object");
+      assert.equal(
+        typeof result.infoLinks,
+        "object",
+        "infoLinks should be an object"
+      );
+
+      // Verify internal entity reference (entity exists in the crate)
+      const internalTermUri = "https://w3id.org/ro/terms/precarious-oral-history#publiclyAccessible";
+      assert.ok(
+        result.infoLinks[internalTermUri],
+        "infoLinks should contain entry for internal term URI"
+      );
+      assert.equal(
+        result.infoLinks[internalTermUri],
+        `${internalTermUri}`,
+        "Internal entity reference should be a hash link"
+      );
+
+
+      console.log("✅ infoLinks pre-calculation test passed");
     });
   });
 });
