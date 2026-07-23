@@ -931,7 +931,14 @@
                 <p>Markdown content not available. <a href="{{ item.id | urlencode }}">View file</a></p>
               {%- endif %}
             {% elif pdfRegex.test(item.id) %}
-              <!--          <iframe   src="{{ item.id }}" type="application/pdf" width="100%" height="600px" loading="lazy" />-->
+                <iframe  
+                  src="{{ item.id }}" 
+                  type="application/pdf" 
+                  width="100%" 
+                  height="600px" 
+                  loading="lazy" 
+                  title="PDF viewer"
+                ></iframe>
             {%- endif %}
             <a href="{{ item.id | urlencode }}">Open file location</a>
           </div>
