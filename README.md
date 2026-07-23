@@ -73,7 +73,6 @@ To generate an About page for the site:
     "encodingFormat":	"text/markdown",
     "isRef_about": "./"
 },
-```
 
 2. Save the markdown file in the crate directory according to the path given as the file ID.
 
