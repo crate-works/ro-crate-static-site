@@ -390,9 +390,9 @@ describe("preview.js", function () {
         },
         navigationByType: {
           "http://pcdm.org/models#Collection": [
-            { uri: "http://schema.org/name", label: "Collection name", columnWidth: "large" },
-            { uri: "http://schema.org/description", label: "Collection description", columnWidth: "medium" },
-            { uri: "@id", label: "ID", stripPrefix: "#collection-", columnWidth: "small" },
+            { uri: "http://schema.org/name", label: "Collection name"},
+            { uri: "http://schema.org/description", label: "Collection description"},
+            { uri: "@id", label: "ID", stripPrefix: "#collection-"},
           ],
         },
         tabular: {
@@ -415,9 +415,6 @@ describe("preview.js", function () {
       assert.equal(columns[1].label, "Collection description");
       assert.equal(columns[2].uri, "@id");
       assert.equal(columns[2].label, "ID");
-      assert.equal(columns[0].columnWidth, "large");
-      assert.equal(columns[1].columnWidth, "medium");
-      assert.equal(columns[2].columnWidth, "small");
 
       const firstRow = result.tabular.types.RepositoryCollection.rows[0];
       assert.ok(firstRow, "Should include at least one row");
