@@ -1,6 +1,8 @@
-# ro-crate-html-lite
+# ro-crate-static-site
 
 A tool to create a complete, completely static `ro-crate-preview.html` file with the same functionality as [ro-crate-html-js](https://github.com/Language-Research-Technology/ro-crate-html-js) but without any dependence on online resources or JavaScript (except for some small helpers).
+
+Note: this repository is now `ro-crate-static-site`. The published package name remains `ro-crate-html-lite`.
 
 HTML Preview Lite is available without any installation at the [RO-Crate Playground](https://ro-crate.ldaca.edu.au/).
 
@@ -230,6 +232,6 @@ To test any changes to the default `template.html`, run the `npm run build` comm
 
 ### HTML Validation continuous integration
 
-This repo has HTML validation set up to run on push/PR. It prints the report on the summary page of each [Actions workflow run](https://github.com/Language-Research-Technology/ro-crate-html-lite/actions/workflows/main.yml). The CI run won't fail on any validation errors, it's just for our information.
+This repo has HTML validation set up to run on push/PR. It prints the report on the summary page of each [Actions workflow run](https://github.com/crate-works/ro-crate-static-site/actions/workflows/main.yml). The CI run won't fail on any validation errors, it's just for our information.
 
 The validator is currently set up to only check `test_data/**/ro-crate-preview.html` files, this means that multipage previews won't be validated. Since the purpose of the validation is to check, by proxy, the validity of the template, CI for the multipage previews will be added as separate workflow in the future.
