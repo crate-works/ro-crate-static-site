@@ -561,6 +561,56 @@ describe("preview.js", function () {
       assert.ok(datasetRow.filterTexts.inlanguage, "Dataset rows should carry inLanguage facet search text");
     });
 
+    it("should hide configured columns from the table while preserving facet filters", async function () {
+      const crate = new ROCrate({ array: true, link: true });
+
+      crate.root.name = "Facet visibility test";
+      crate.addEntity({
+        "@id": "dataset-1",
+        "@type": "Dataset",
+        name: "Dataset One",
+        about: { "@id": "#subject-1" },
+      });
+      crate.addEntity({
+        "@id": "#subject-1",
+        "@type": "DefinedTerm",
+        name: "Garden histories",
+      });
+
+      await crate.resolveContext();
+
+      const config = {
+        multipage: false,
+        root: { template: "template.html" },
+        settings: {
+          tabular: true,
+        },
+        navigationByType: {
+          "http://schema.org/Dataset": [
+            { uri: "http://schema.org/name", label: "Dataset" },
+            { uri: "http://schema.org/about", label: "Subjects", addFacet: true, facetLabel: "Subject", hideInTable: true },
+          ],
+        },
+        tabular: {
+          mainNavType: "Dataset",
+        },
+      };
+
+      const result = await roCrateToJSON(crate, config, []);
+      const datasetTable = result.tabular.types.Dataset;
+
+      assert.ok(datasetTable, "Dataset tabular entries should exist");
+      assert.equal(datasetTable.columns.length, 1, "Hidden columns should be removed from the visible table columns");
+      assert.equal(datasetTable.columns[0].uri, "http://schema.org/name", "Visible columns should keep the remaining configured column");
+      assert.equal(datasetTable.filters.length, 1, "Hidden columns should still contribute facet filters");
+      assert.equal(datasetTable.filters[0].key, "about", "Facet filters should still be generated for hidden columns");
+      assert.deepEqual(
+        datasetTable.filters[0].items.slice(1).map((item) => item.label),
+        ["Garden histories"],
+        "Facet values should still be populated for hidden columns"
+      );
+    });
+
     it("should normalise bare property terms to URIs so layout propertyGroups can match them", async function () {
       const crateData = JSON.parse(
         fs.readFileSync("test_data/sample/crate/ro-crate-metadata.json", "utf8")
