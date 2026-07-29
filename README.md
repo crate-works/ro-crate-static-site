@@ -166,6 +166,23 @@ You can also provide explicit per-type navigation and columns with `navigationBy
 }
 ```
 
+Per-column visibility and facets:
+
+- Add `"hideInTable": true` on a `navigationByType` column entry to hide that property from visible table columns for that type.
+- Keep `"addFacet": true` on the same entry if you still want the property available as a filter facet.
+
+Example:
+
+```json
+{
+    "uri": "http://purl.org/dc/terms#format",
+    "label": "Format",
+    "addFacet": true,
+    "facetLabel": "format",
+    "hideInTable": true
+}
+```
+
 How columns are chosen:
 
 - Column order follows `propertyGroups` from the resolved layout (or legacy `inputGroups` when present).
