@@ -390,9 +390,9 @@ describe("preview.js", function () {
         },
         navigationByType: {
           "http://pcdm.org/models#Collection": [
-            { uri: "http://schema.org/name", label: "Collection name" },
-            { uri: "http://schema.org/description", label: "Collection description" },
-            { uri: "@id", label: "ID", stripPrefix: "#collection-" },
+            { uri: "http://schema.org/name", label: "Collection name"},
+            { uri: "http://schema.org/description", label: "Collection description"},
+            { uri: "@id", label: "ID", stripPrefix: "#collection-"},
           ],
         },
         tabular: {
