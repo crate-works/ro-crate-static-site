@@ -430,7 +430,11 @@ program
       try {
         const configContent = fs.readFileSync(configFile, "utf8");
         const parsedConfig = JSON.parse(configContent); // Parse the JSON content
-        configData = mergeMissingObjectKeys(parsedConfig, defaultConfig);
+        // `multipage` defaults to false only when no config file is given at all (see
+        // `defaultConfig` above). A config file that omits the key should leave multipage
+        // enabled (the default `roCrateToJSON` assumes), so exclude it from this merge.
+        const { multipage: _unusedDefaultMultipage, ...mergeDefaults } = defaultConfig;
+        configData = mergeMissingObjectKeys(parsedConfig, mergeDefaults);
         
         // Normalize legacy inputGroups to propertyGroups
         if (Array.isArray(configData.inputGroups) && (!Array.isArray(configData.propertyGroups) || configData.propertyGroups.length === 0)) {
