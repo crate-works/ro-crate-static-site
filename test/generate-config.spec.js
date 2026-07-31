@@ -8,19 +8,19 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const indexPath = path.join(repoRoot, "index.js");
+const cliPath = path.join(repoRoot, "roc-html.js");
 const sampleCratePath = path.join(repoRoot, "test_data", "sample", "crate");
 const layoutPath = path.join(repoRoot, "lib", "default_layout.json");
 
 function runGenerateConfig(configPath) {
   execFileSync(
     process.execPath,
-    [indexPath, sampleCratePath, "--layout", layoutPath, "--generate-config", configPath],
+    [cliPath, sampleCratePath, "--layout", layoutPath, "--generate-config", configPath],
     { cwd: repoRoot, stdio: "pipe" }
   );
 }
 
-describe("index.js --generate-config", function () {
+describe("roc-html.js --generate-config", function () {
   this.timeout(30000);
 
   let tempDir;
