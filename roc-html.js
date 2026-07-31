@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const program = new Command();
 import { fileURLToPath } from 'url';
-import { roCrateToJSON, renderTemplate } from './lib/preview.js';
+import { roCrateToJSON, renderTemplate, renderMultiPage } from './lib/preview.js';
 
 // Fetch the mapping JSON between conformsTo and mode
 async function fetchMapping() {
@@ -542,36 +542,39 @@ program
     }
 
     if (configFile) {
-
-      template = fs.readFileSync(configData.root.template, "utf8");
+      // Read the template text for every page a config-driven build might
+      // render (root + one per matched @type), keyed by the path used in
+      // config so renderMultiPage's lookup matches.
+      const pageTemplates = {};
+      pageTemplates[configData.root.template] = fs.readFileSync(configData.root.template, "utf8");
       if (configData.multipage !== false) {
-        for (const [entityId, pageDetails] of Object.entries(crateLite.pages)) {
-        
-          // Create a temporary crateLite with this entity as the entry point
-          const pageData = {
-            ...crateLite,
-            entryPoint: entityId,
-          };
-          
-          // For now, use the template file content for all pages
-          // Later you might want to load different templates based on entity type
-          console.log(`Rendering page for entity ${entityId} using template ${pageDetails.template}`);
-          const pageTemplate = fs.readFileSync(pageDetails.template, "utf8");
-
-          const html = await renderTemplate(pageData, pageTemplate, templateConfig, styleText);
-
-          const outputPath = path.join(cratePath, pageDetails.path);
-          const outputDir = path.dirname(outputPath);
-          
-          if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
+        for (const pageDetails of Object.values(crateLite.pages)) {
+          if (!(pageDetails.template in pageTemplates)) {
+            pageTemplates[pageDetails.template] = fs.readFileSync(pageDetails.template, "utf8");
           }
-          
-          fs.writeFileSync(outputPath, html, "utf-8");
-          console.log(`Wrote page for ${entityId} to ${outputPath}`);
         }
       }
-    } 
+
+      const { rootHtml, pages } = await renderMultiPage(crateLite, configData, styleText, { pageTemplates });
+
+      for (const page of pages) {
+        console.log(`Rendering page for entity ${page.id} using template ${crateLite.pages[page.id].template}`);
+        const outputPath = path.join(cratePath, page.path);
+        const outputDir = path.dirname(outputPath);
+
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+
+        fs.writeFileSync(outputPath, page.html, "utf-8");
+        console.log(`Wrote page for ${page.id} to ${outputPath}`);
+      }
+
+      fs.writeFileSync(path.join(cratePath, "ro-crate-preview.html"), rootHtml, "utf-8");
+      console.log(`Wrote preview to ${path.join(cratePath, "ro-crate-preview.html")}`);
+      return;
+    }
+
     const html = await renderTemplate(crateLite, template, templateConfig, styleText);
     fs.writeFileSync(
       path.join(cratePath, "ro-crate-preview.html"),

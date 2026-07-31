@@ -1,1 +1,1 @@
-export { renderSinglePage, renderTemplate, roCrateToJSON } from "./lib/preview.js";
+export { renderSinglePage, renderTemplate, renderMultiPage, roCrateToJSON } from "./lib/preview.js";
