@@ -25,18 +25,27 @@
         "Dataset",
         "RepositoryCollection"
       ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Collection"
+      },
       "name": "Birds",
-      "description": "bird stories",
-      "isRef_author": "",
-      "isRef_publisher": "",
+      "description": "This is an example bird collection",
+      "datePublished": "2026",
+      "inLanguage": "English",
+      "ldac:subjectLanguage": "English",
+      "ldac:metadataIsPublic": "true",
+      "author": {
+        "@id": "#LDaCA"
+      },
+      "publisher": {
+        "@id": "https://ror.org/00rqy9422"
+      },
+      "license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
       "pcdm:hasMember": {
         "@id": "#magpie"
-      },
-      "conformsTo": [
-        {
-          "@id": "https://w3id.org/ldac/profile#Collection"
-        }
-      ]
+      }
     },
     {
       "@id": "#magpie",
@@ -46,7 +55,7 @@
       "pcdm:memberOf": {
         "@id": "./"
       },
-      "speaker": {
+      "ldac:speaker": {
         "@id": "#person_1"
       },
       "datePublished": "2016-11-08 01:36:17",
@@ -73,9 +82,9 @@
     },
     {
       "@id": "#person_1",
+      "@type": "Person",
       "name": "Person 1",
-      "description": "about them",
-      "@type": "Thing"
+      "description": "about them"
     },
     {
       "@id": "files/images/magpie.jpg",

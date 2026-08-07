@@ -1,180 +1,386 @@
-<html lang="en">
-  <head>
-    
-    
-    
+
+
+<html>
+<head>
+
+
+<script type="application/ld+json"> 
+  {
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "@vocab": "http://schema.org/",
+      "ldac": "https://w3id.org/ldac/terms#",
+      "custom": "arcp://name,custom/terms#"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "identifier": "ro-crate-metadata.json",
+      "about": {
+        "@id": "./"
+      },
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      }
+    },
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryCollection"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Collection"
+      },
+      "name": "Birds",
+      "description": "This is an example bird collection",
+      "datePublished": "2026",
+      "inLanguage": "English",
+      "ldac:subjectLanguage": "English",
+      "ldac:metadataIsPublic": "true",
+      "author": {
+        "@id": "#LDaCA"
+      },
+      "publisher": {
+        "@id": "https://ror.org/00rqy9422"
+      },
+      "license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "pcdm:hasMember": {
+        "@id": "#magpie"
+      }
+    },
+    {
+      "@id": "#magpie",
+      "@type": "RepositoryObject",
+      "name": "magpie",
+      "description": "a story in language",
+      "pcdm:memberOf": {
+        "@id": "./"
+      },
+      "ldac:speaker": {
+        "@id": "#person_1"
+      },
+      "datePublished": "2016-11-08 01:36:17",
+      "license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "custom:translation": "Magpie",
+      "custom:sentence": "a story in language",
+      "custom:sentenceTranslation": "story translation",
+      "custom:photographerName": "Quartl",
+      "custom:scientificName": "birdy",
+      "custom:callAudio": {
+        "@id": "files/audio/calls/magpie.mp3"
+      },
+      "custom:nameAudio": {
+        "@id": "files/audio/names/magpie.mp3"
+      },
+      "custom:sentenceAudio": {
+        "@id": "files/audio/sentences/magpie.mp3"
+      }
+    },
+    {
+      "@id": "#person_1",
+      "@type": "Person",
+      "name": "Person 1",
+      "description": "about them"
+    },
+    {
+      "@id": "files/images/magpie.jpg",
+      "@type": "File",
+      "isPartOf": {
+        "@id": "#magpie"
+      }
+    },
+    {
+      "@id": "files/audio/calls/magpie.mp3",
+      "@type": "File",
+      "isPartOf": {
+        "@id": "#magpie"
+      }
+    },
+    {
+      "@id": "files/audio/names/magpie.mp3",
+      "@type": "File",
+      "isPartOf": {
+        "@id": "#magpie"
+      }
+    },
+    {
+      "@id": "files/audio/sentences/magpie.mp3",
+      "@type": "File",
+      "isPartOf": {
+        "@id": "#magpie"
+      }
+    },
+    {
+      "@id": "arcp://name,custom/terms#translation",
+      "@type": "rdf:Property",
+      "name": "translation",
+      "description": "the translation of the entry",
+      "rdfs:label": "translation",
+      "rdfs:comment": "the translation of the entry"
+    },
+    {
+      "@id": "arcp://name,custom/terms#sentence",
+      "@type": "rdf:Property",
+      "name": "sentence",
+      "description": "a story about the entry",
+      "rdfs:label": "sentence",
+      "rdfs:comment": "a story about the entry"
+    },
+    {
+      "@id": "arcp://name,custom/terms#callAudio",
+      "@type": "rdf:Property",
+      "name": "callAudio",
+      "description": "the call audio file associated with this entry",
+      "rdfs:label": "callAudio",
+      "rdfs:comment": "the call audio file associated with this entry"
+    },
+    {
+      "@id": "arcp://name,custom/terms#scientificName",
+      "@type": "rdf:Property",
+      "name": "scientificName",
+      "description": "the scientificName for this entry",
+      "rdfs:label": "scientificName",
+      "rdfs:comment": "the scientificName for this entry"
+    },
+    {
+      "@id": "arcp://name,custom/terms#nameAudio",
+      "@type": "rdf:Property",
+      "name": "nameAudio",
+      "description": "the name audio file associated with this entry",
+      "rdfs:label": "nameAudio",
+      "rdfs:comment": "the name audio file associated with this entry"
+    },
+    {
+      "@id": "arcp://name,custom/terms#sentenceAudio",
+      "@type": "rdf:Property",
+      "name": "sentenceAudio",
+      "description": "the sentence audio file associated with this entry",
+      "rdfs:label": "sentenceAudio",
+      "rdfs:comment": "the sentence audio file associated with this entry"
+    },
+    {
+      "@id": "arcp://name,custom/terms#photographerName",
+      "@type": "rdf:Property",
+      "name": "photographerName",
+      "description": "the name of the photographer who took the associated image",
+      "rdfs:label": "photographerName",
+      "rdfs:comment": "the name of the photographer who took the associated image"
+    },
+    {
+      "@id": "about/about.md",
+      "@type": [
+        "File",
+        "AboutPage"
+      ],
+      "encodingFormat": "text/markdown",
+      "about": {
+        "@id": "./"
+      }
+    }
+  ]
+}
+</script>
 
     
+<!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script -->
+<script src="https://unpkg.com/ro-crate-html@0.1/dist/ro-crate-dynamic.min.js"></script>
 
-    
-    
-    
-    
-    
-    
-    
-    <meta property="og:url" content="https://example.com/birds/ro-crate-preview.html" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="http://example.com/birds/files/og-image.jpg" />
-    <meta property="og:image:secure_url" content="https://example.com/birds/files/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:title" content="Birds" />
-    <meta property="og:description" content="bird stories" />
-    
-    
-    
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birds</title>
-    <link rel="icon" type="image/png" href="files/images/favicon.png" />
-    
-    <style>
-        html, body {
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
-            background-color: #d8ffe2;
-            background-image: url(files/images/clouds-background.png);
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center center;
-            margin: 0;
-        }
-        .page-title, .footer-row {
-            text-align: center;
-            background-color: black;
-            color: white;
-            font-weight: normal;
-            padding-top: 1em;
-            padding-bottom: 1em;
-            margin: 0;
-        }
-        .footer-row a {
-            color: white;
-            font-size: 1.2em;
-        }
-        .main-container {
-            width:100%;
-        }
-        .object-grid {
-            width:100%;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-        .object-grid-person {
-            width:100%;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            background-color: black;
-        }
-        @media (max-width: 700px) {
-            .object-grid {
-                flex-direction: column;
-            }
-            div.bird {
-                width: 90vw !important;
-                height: auto;
-            }
-        }
-        div.bird {
-            width: 200px;
-            height: 200px;
-            border: 1px solid #aaa;
-            border-radius: 8px;
-            margin: 1em;
-            background-size: cover;
-            background-position: center;
-            transition: box-shadow 0.1s, transform 0.1s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            cursor: pointer;
-        }
-        .object-grid div.bird:active {
-            box-shadow: 0 1px 2px rgba(0,0,0,0.12) inset;
-            transform: translateY(2px) scale(0.97);
-            border-color: #888;
-        }
-        div.bird {
-            position: relative;
-            overflow: hidden;
-        }
-        div.bird > a {
-            display: block;
-            width: 100%;
-            height: 100%;
-            text-decoration: none;
-            color: inherit;
-        }
-        .bird-name {
-            position: absolute;
-            left: 50%;
-            bottom: 0;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            padding: 0.3em 0.8em;
-            border-radius: 0 0 8px 8px;
-            font-size: 1em;
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        </style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<meta charset='utf-8'/>
+<style>
+
+table.table {
+  padding-bottom: 300px;
+}
+</style>
 </head>
+
+
 <body>
 
+  <nav class="navbar">
+
+    <ul class="nav navbar-nav" >
+        <li ><a href="#"><span class="glyphicon glyphicon-home dataset_name">&nbsp;Birds</span></a></li>
+    </ul>
+
+  </nav>
+<div class="container">
+<div class="jumbotron">
+<h4 class="citation"></h4>
+<h3 class="item_name">Birds</h3>
+
+
+<a href="./ro-crate-metadata.json">⬇️🏷️ Download all the metadata for <span class='name'>Birds</span> in JSON-LD format</a>
+
+
+<div id="check"></div>
+
+
+</div>
 
 
 
-    
-
-    <div id="./" class="root">
-        <div class="header-row">
-            <h2 class="page-title">
+<div id="summary">
+<div class='all-meta'>
+            <div>
+                <h3> Birds</h3>
                 
-                Birds
                 
-            </h2>
+                
+                
+        <div id="./">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>./</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Birds</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><ul>
+                        <li><span>Dataset</span></li>
+                        
+                        <li><span>RepositoryCollection</span></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">description<span>&nbsp;</span><a href="http://schema.org/description">[?]</a></th>
+            <td style='text-align:left'><span>This is an example bird collection</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">datePublished<span>&nbsp;</span><a href="http://schema.org/datePublished">[?]</a></th>
+            <td style='text-align:left'><span>2026</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">author<span>&nbsp;</span><a href="http://schema.org/author">[?]</a></th>
+            <td style='text-align:left'>#LDaCA</td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">conformsTo<span>&nbsp;</span><a href="http://purl.org/dc/terms/conformsTo">[?]</a></th>
+            <td style='text-align:left'><a href="https://w3id.org/ldac/profile#Collection">https://w3id.org/ldac/profile#Collection</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">inLanguage<span>&nbsp;</span><a href="http://schema.org/inLanguage">[?]</a></th>
+            <td style='text-align:left'><span>English</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">ldac:subjectLanguage<span>&nbsp;</span><a href="https://w3id.org/ldac/terms#subjectLanguage">[?]</a></th>
+            <td style='text-align:left'><span>English</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">ldac:metadataIsPublic<span>&nbsp;</span><a href="https://w3id.org/ldac/terms#metadataIsPublic">[?]</a></th>
+            <td style='text-align:left'><span>true</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">publisher<span>&nbsp;</span><a href="http://schema.org/publisher">[?]</a></th>
+            <td style='text-align:left'><a href="https://ror.org/00rqy9422">https://ror.org/00rqy9422</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">license<span>&nbsp;</span><a href="http://schema.org/license">[?]</a></th>
+            <td style='text-align:left'><a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">pcdm:hasMember<span>&nbsp;</span><a href="http://pcdm.org/models#hasMember">[?]</a></th>
+            <td style='text-align:left'><a href="#%23magpie">magpie</a></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">about<span>&nbsp;</span><a href="http://schema.org/about">[?]</a></th>
+            <td style='text-align:left'><ul>
+                        <li><a href="#ro-crate-metadata.json">ro-crate-metadata.json</a></li>
+                        
+                        <li><a href="#about/about.md">about/about.md</a></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">pcdm:memberOf<span>&nbsp;</span><a href="http://pcdm.org/models#memberOf">[?]</a></th>
+            <td style='text-align:left'><a href="#%23magpie">magpie</a></td>
+            </tr></tbody>
+            </table>
         </div>
-
-        <div class=object-grid>
-            
-            
+            </div>
+        <hr/><br/><br/><hr/><br/><br/><hr/><br/><br/><hr/><br/><br/><hr/><br/><br/>
+            <div>
+                <h3> magpie</h3>
+                <img src="files/images/magpie.jpg" width="80%">
                 
                 
                 
-
-                <div class="bird" style="background-image: url('files/images/magpie.jpg');">
-                    <a href="ro-crate-preview_html/452dbe49/eb4840b0/e8494528/bcbed18c/index.html">
-                        <div class="bird-name">
-                            magpie
-                        </div>
-                    </a>
-                </div>
+        <div id="#magpie">
             
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#magpie</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>magpie</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>RepositoryObject</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">description<span>&nbsp;</span><a href="http://schema.org/description">[?]</a></th>
+            <td style='text-align:left'><span>a story in language</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">datePublished<span>&nbsp;</span><a href="http://schema.org/datePublished">[?]</a></th>
+            <td style='text-align:left'><span>2016-11-08 01:36:17</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">pcdm:memberOf<span>&nbsp;</span><a href="http://pcdm.org/models#memberOf">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Birds</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">ldac:speaker<span>&nbsp;</span><a href="https://w3id.org/ldac/terms#speaker">[?]</a></th>
+            <td style='text-align:left'><a href="#%23person_1">Person 1</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">license<span>&nbsp;</span><a href="http://schema.org/license">[?]</a></th>
+            <td style='text-align:left'><a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">translation<span>&nbsp;</span><span name="propName" title="the translation of the entry">[?]</span></th>
+            <td style='text-align:left'><span>Magpie</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">sentence<span>&nbsp;</span><span name="propName" title="a story about the entry">[?]</span></th>
+            <td style='text-align:left'><span>a story in language</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">custom:sentenceTranslation<span>&nbsp;</span><a href="arcp://name,custom/terms#sentenceTranslation">[?]</a></th>
+            <td style='text-align:left'><span>story translation</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">photographerName<span>&nbsp;</span><span name="propName" title="the name of the photographer who took the associated image">[?]</span></th>
+            <td style='text-align:left'><span>Quartl</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">scientificName<span>&nbsp;</span><span name="propName" title="the scientificName for this entry">[?]</span></th>
+            <td style='text-align:left'><span>birdy</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">callAudio<span>&nbsp;</span><span name="propName" title="the call audio file associated with this entry">[?]</span></th>
+            <td style='text-align:left'><a href="#files/audio/calls/magpie.mp3">files/audio/calls/magpie.mp3</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">nameAudio<span>&nbsp;</span><span name="propName" title="the name audio file associated with this entry">[?]</span></th>
+            <td style='text-align:left'><a href="#files/audio/names/magpie.mp3">files/audio/names/magpie.mp3</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">sentenceAudio<span>&nbsp;</span><span name="propName" title="the sentence audio file associated with this entry">[?]</span></th>
+            <td style='text-align:left'><a href="#files/audio/sentences/magpie.mp3">files/audio/sentences/magpie.mp3</a></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">pcdm:hasMember<span>&nbsp;</span><a href="http://pcdm.org/models#hasMember">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Birds</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">isPartOf<span>&nbsp;</span><a href="http://schema.org/isPartOf">[?]</a></th>
+            <td style='text-align:left'><ul>
+                        <li><a href="#files/images/magpie.jpg">files/images/magpie.jpg</a></li>
+                        
+                        <li><a href="#files/audio/calls/magpie.mp3">files/audio/calls/magpie.mp3</a></li>
+                        
+                        <li><a href="#files/audio/names/magpie.mp3">files/audio/names/magpie.mp3</a></li>
+                        
+                        <li><a href="#files/audio/sentences/magpie.mp3">files/audio/sentences/magpie.mp3</a></li>
+                        </ul></td>
+            </tr></tbody>
+            </table>
         </div>
+            </div>
+        <hr/><br/><br/></div>
+</div>
 
-        <div class="footer-row main-container">
-            
-                <div style="text-align:center; margin: 1em;">
-                    <a href="ro-crate-preview_html/f4d7d8e2/a0129bf0/277ebe9b/f2ca8cce/index.html" class="about-link">
-                        About this project
-                    </a>
-                    <br><br><p style="font-size: large;">Speakers:</p>
-                </div>
-            
-        </div>
 
-        <div class="object-grid-person">
-            
-            
-        </div>
-             
-    </div>
+
 
 
 </body>
