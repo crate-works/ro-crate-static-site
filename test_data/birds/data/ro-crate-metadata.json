@@ -31,7 +31,12 @@
       "isRef_publisher": "",
       "pcdm:hasMember": {
         "@id": "#magpie"
-      }
+      },
+      "conformsTo": [
+        {
+          "@id": "https://w3id.org/ldac/profile#Collection"
+        }
+      ]
     },
     {
       "@id": "#magpie",
@@ -53,7 +58,7 @@
       "custom:sentenceTranslation": "story translation",
       "custom:photographerName": "Quartl",
       "custom:scientificName": "birdy",
-      "custom:image": {
+      "image": {
         "@id": "files/images/magpie.jpg"
       },
       "custom:callAudio": {
@@ -123,14 +128,6 @@
       "description": "the call audio file associated with this entry",
       "rdfs:label": "callAudio",
       "rdfs:comment": "the call audio file associated with this entry"
-    },
-    {
-      "@id": "arcp://name,custom/terms#image",
-      "@type": "rdf:Property",
-      "name": "image",
-      "description": "the bird image",
-      "rdfs:label": "image",
-      "rdfs:comment": "the bird image"
     },
     {
       "@id": "arcp://name,custom/terms#scientificName",
