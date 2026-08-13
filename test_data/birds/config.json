@@ -5,5 +5,6 @@
       "AboutPage": {"template": "test_data/birds/templates/about-template.html"}
     },
     "root" : {"template": "test_data/birds/templates/root-template.html"},
-    "domain": "http://example.com/birds"
+    "domain": "http://example.com/birds",
+    "multipage": true
 }
