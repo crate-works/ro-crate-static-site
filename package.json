@@ -1,15 +1,15 @@
 {
-  "name": "ro-crate-html-lite",
+  "name": "ro-crate-static-site",
   "type": "module",
   "version": "0.0.8",
   "description": "A tool to create static HTML-only ro-crate-preview-html files for an RO-Crate",
   "main": "index.js",
   "bin": {
-    "roc-html": "roc-html.js"
+    "rocss": "roc-html.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Language-Research-Technology/ro-crate-html-lite"
+    "url": "https://github.com/crate-works/ro-crate-static-site"
   },
   "scripts": {
     "test": "mocha",

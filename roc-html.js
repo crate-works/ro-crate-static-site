@@ -338,7 +338,7 @@ async function loadStyleText(stylePath) {
 }
 
 program
-  .name("roc-html")
+  .name("rocss")
   .description("Create an HTML file preview for an RO-Crate from a specified directory.")
   .argument("<path_to_crate_directory>", "Path to the crate directory.")
   .option(

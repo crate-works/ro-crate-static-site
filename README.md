@@ -18,7 +18,7 @@ npm install ro-crate-html-lite
 ## CLI Usage
 
 ```
-npx roc-html [options] <path_to_crate_directory>
+npx rocss [options] <path_to_crate_directory>
 
 Create an HTML file preview for an RO-Crate from a specified directory.
 
@@ -51,13 +51,13 @@ Examples:
 
 ```bash
 # Use default.css
-npx roc-html test_data/COOEE/crate
+npx rocss test_data/COOEE/crate
 
 # Use style from config
-npx roc-html -c test_data/oral-history/oral-history-single-page-config.json test_data/oral-history/crate
+npx rocss -c test_data/oral-history/oral-history-single-page-config.json test_data/oral-history/crate
 
 # Override style from CLI
-npx roc-html --style test_data/oral-history/oral-history-blue.css test_data/COOEE/crate
+npx rocss --style test_data/oral-history/oral-history-blue.css test_data/COOEE/crate
 ```
 
 ### About Page
@@ -86,13 +86,13 @@ To generate an About page for the site:
 Sample crate:
 
 ```
-npx roc-html test_data/sample
+npx rocss test_data/sample
 ```
 
 Sample crate with tabular summary and no multipage output:
 
 ```
-npx roc-html -c test_data/sample/sample-config.json test_data/sample/crate
+npx rocss -c test_data/sample/sample-config.json test_data/sample/crate
 ```
 
 ## Library Usage
@@ -112,7 +112,7 @@ await writeFile('./preview.html', previewContent, 'utf-8');
 Farms to freeways -- multiple pages  
 
 ```
-npx roc-html -c test_data/f2fnew/f2fconfig.json test_data/f2fnew/data
+npx rocss -c test_data/f2fnew/f2fconfig.json test_data/f2fnew/data
 ```
 
 ### Optional tabular summary settings for multipage configs
