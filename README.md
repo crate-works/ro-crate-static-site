@@ -2,7 +2,7 @@
 
 A tool to create a complete, completely static `ro-crate-preview.html` file with the same functionality as [ro-crate-html-js](https://github.com/Language-Research-Technology/ro-crate-html-js) but without any dependence on online resources or JavaScript (except for some small helpers).
 
-Note: this repository is now `ro-crate-static-site`. The published package name remains `ro-crate-html-lite`.
+Note: this repository is now `ro-crate-static-site`
 
 HTML Preview Lite is available without any installation at the [RO-Crate Playground](https://ro-crate.ldaca.edu.au/).
 
@@ -12,7 +12,7 @@ A recipe is available [here](https://github.com/Language-Research-Technology/dev
 ## Install
 
 ```
-npm install ro-crate-html-lite
+npm install ro-crate-static-site
 ```
 
 ## CLI Usage
