@@ -200,7 +200,7 @@ How columns are chosen:
 If you want tabular summaries without generating per-entity pages, set:
 
 ```json
-"multipage": false
+  "multipage": false
 ```
 
 in the config file.
