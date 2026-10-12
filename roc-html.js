@@ -363,7 +363,7 @@ program
   )
   .option(
     "--rm",
-    "Remove ro-crate-preview.html and ro-crate-preview_html directory from the crate."
+    "Remove ro-crate-preview.html and ro-crate-preview_files directory from the crate."
   )
  
   
@@ -376,7 +376,7 @@ program
 
     if (options.rm) {
       const previewHtmlPath = path.join(cratePath, "ro-crate-preview.html");
-      const previewHtmlDirPath = path.join(cratePath, "ro-crate-preview_html");
+      const previewHtmlDirPath = path.join(cratePath, "ro-crate-preview_files");
 
       let removed = false;
       if (fs.existsSync(previewHtmlPath)) {

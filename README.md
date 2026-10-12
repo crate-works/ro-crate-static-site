@@ -33,7 +33,7 @@ Options:
     -m, --multipage-config <configPath>  Deprecated alias for --config.
     -s, --style <stylePath>              Filepath or URL to a CSS file. Overrides config style and default.css.
     --generate-config <configPath>       Generate a starter config file with empty structure and termMapping for crate class/property URIs.
-    --rm                                 Remove ro-crate-preview.html and ro-crate-preview_html directory from the crate.
+    --rm                                 Remove ro-crate-preview.html and ro-crate-preview_files directory from the crate.
   -h, --help                          display help for command
 ```
 
