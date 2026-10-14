@@ -118,12 +118,16 @@
 
         </div>
         <div class="middle-column property-grid">
-        {{ data.entryPoint | renderMarkdown | safe }}
-        <div class="logo-container">
-            <img src="../../../../../about/logos/clc_logo.jpeg", class="logo">
-            <img src="../../../../../about/logos/Karungkarni_logo.jpg", class="logo">
-            <img src="../../../../../about/logos/murnkurrumurnkurru_logo_2014-1.jpg", class="logo">
-            <img src="../../../../../about/logos/UQlogo-Stacked-Purple-rgb.png", class="logo">
+        {{ data.ids[data.entryPoint].content | renderMarkdown | safe }}
+        {% for entity_id in data.types.Logo %}
+            {% set entity = data.ids[entity_id] %}
+            {% set imagePath = entity.props["http://schema.org/image"].fwd[0].target_id if entity.props["http://schema.org/image"] else "" %}
+            <div class="logo-container">
+                {% if imagePath %}
+                    <img src="../../../../../{{ imagePath }}" class="logo" alt="{{ entity.props['http://schema.org/name'].fwd[0].value if entity.props['http://schema.org/name'] }}">
+                {% endif %}
+            </div>
+        {% endfor %}
         </div>
     </div>
 </div>  
